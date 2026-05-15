@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Titanic Survival Model Explorer — TFE UPC PBA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Merriweather:wght@300;400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ──────────────────────────────────────────────── */
+:root {
+  --bg:      #080818;
+  --surface: #0d0d22;
+  --card:    #0f0f2a;
+  --indigo:  #1e1b4b;
+  --gold:    #ca8a04;
+  --gold-lt: #fbbf24;
+  --teal:    #0d9488;
+  --teal-lt: #2dd4bf;
+  --text:    #f0f4ff;
+  --muted:   #94a3b8;
+  --glass:   rgba(255,255,255,0.04);
+  --glass-b: rgba(255,255,255,0.08);
+  --red:     #ef4444;
+  --green:   #10b981;
+  --amber:   #f59e0b;
+  --ease:    cubic-bezier(.4,0,.2,1);
+  --nav-h:   56px;
+}
+*, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+html { font-size:16px; scroll-behavior:smooth; scroll-padding-top:calc(var(--nav-h) + 16px); }
+body { background:var(--bg); color:var(--text); font-family:'Inter',system-ui,sans-serif; line-height:1.6; overflow-x:hidden; }
+img  { max-width:100%; display:block; border-radius:.75rem; }
+a    { color:var(--teal-lt); text-decoration:none; }
+a:hover { text-decoration:underline; }
+@media (prefers-reduced-motion:reduce) { * { animation-duration:.01ms!important; transition-duration:.01ms!important; } }
+
+/* ── NAV ─────────────────────────────────────────────────── */
+.nav {
+  position:sticky; top:0; z-index:100; height:var(--nav-h);
+  background:rgba(8,8,24,.92); border-bottom:1px solid var(--glass-b);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 1.5rem; gap:1rem;
+}
+.nav-brand {
+  font-family:'Cormorant Garamond',serif; font-size:1rem; font-weight:700;
+  color:var(--text); white-space:nowrap; flex-shrink:0;
+}
+.nav-brand span { color:var(--gold); }
+.nav-links {
+  display:flex; gap:.25rem; list-style:none; overflow-x:auto;
+  scrollbar-width:none; flex-shrink:1;
+}
+.nav-links::-webkit-scrollbar { display:none; }
+.nav-links a {
+  font-size:.72rem; font-weight:500; letter-spacing:.04em;
+  color:var(--muted); padding:.35rem .7rem; border-radius:.4rem;
+  transition:color .18s,background .18s; white-space:nowrap;
+}
+.nav-links a:hover { color:var(--text); background:var(--glass); text-decoration:none; }
+.nav-sim-btn {
+  display:inline-flex; align-items:center; gap:.4rem;
+  padding:.38rem .9rem; background:var(--gold); color:#000;
+  font-family:'Inter',sans-serif; font-size:.72rem; font-weight:600;
+  letter-spacing:.04em; border-radius:2rem; flex-shrink:0;
+  transition:background .18s,transform .18s;
+}
+.nav-sim-btn:hover { background:var(--gold-lt); transform:translateY(-1px); text-decoration:none; }
+.nav-sim-btn svg { width:13px; height:13px; }
+
+/* ── LAYOUT ──────────────────────────────────────────────── */
+.container { max-width:1060px; margin-inline:auto; padding:0 1.5rem; }
+section { padding:4rem 0; border-bottom:1px solid var(--glass-b); }
+section:last-of-type { border-bottom:none; }
+
+/* ── SECTION HEADER ──────────────────────────────────────── */
+.section-eyebrow {
+  font-family:'Inter',sans-serif; font-size:.68rem; font-weight:600;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--teal);
+  margin-bottom:.6rem;
+}
+.section-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.6rem,3.5vw,2.2rem); font-weight:700;
+  line-height:1.15; margin-bottom:.6rem;
+}
+.section-desc {
+  font-family:'Merriweather',serif; font-size:.88rem; font-weight:300;
+  color:var(--muted); line-height:1.7; max-width:620px;
+  margin-bottom:2rem;
+}
+
+/* ── HERO ────────────────────────────────────────────────── */
+.hero-explorer {
+  padding:5rem 0 4rem; text-align:center;
+  background:radial-gradient(ellipse 80% 60% at 50% 0%, rgba(13,148,136,.08) 0%, transparent 70%);
+}
+.hero-explorer .section-eyebrow { display:inline-block; }
+.hero-explorer .section-title   { font-size:clamp(2rem,5vw,3.2rem); }
+.hero-explorer .section-desc    { margin-inline:auto; max-width:580px; }
+.hero-tags { display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; margin-bottom:1.5rem; }
+.hero-tag {
+  padding:.28rem .8rem; border-radius:2rem; font-size:.7rem; font-weight:500;
+  letter-spacing:.06em; border:1px solid;
+}
+.hero-tag.teal  { color:var(--teal-lt); border-color:rgba(13,148,136,.4); background:rgba(13,148,136,.06); }
+.hero-tag.gold  { color:var(--gold-lt); border-color:rgba(202,138,4,.4);  background:rgba(202,138,4,.06); }
+.hero-tag.muted { color:var(--muted);   border-color:var(--glass-b);       background:var(--glass); }
+
+/* ── KPIS ────────────────────────────────────────────────── */
+.kpi-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:1rem;
+}
+.kpi-card {
+  background:var(--card); border:1px solid var(--glass-b); border-radius:1rem;
+  padding:1.2rem 1rem; position:relative; overflow:hidden;
+  transition:border-color .2s, transform .2s;
+}
+.kpi-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg, var(--kpi-color,var(--teal)) 0%, transparent 60%);
+  opacity:.05; transition:opacity .2s;
+}
+.kpi-card:hover { border-color:rgba(13,148,136,.3); transform:translateY(-2px); }
+.kpi-card:hover::before { opacity:.09; }
+.kpi-val {
+  font-family:'Cormorant Garamond',serif;
+  font-size:2rem; font-weight:700; line-height:1;
+  color:var(--kpi-color,var(--teal-lt)); margin-bottom:.3rem;
+}
+.kpi-label {
+  font-family:'Inter',sans-serif; font-size:.72rem; font-weight:500;
+  color:var(--muted); line-height:1.35;
+}
+.kpi-sub {
+  font-family:'Inter',sans-serif; font-size:.65rem; color:var(--glass-b);
+  margin-top:.2rem; color:rgba(148,163,184,.5);
+}
+
+/* ── EDA GALLERY ─────────────────────────────────────────── */
+.eda-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.2rem;
+}
+.eda-card {
+  background:var(--card); border:1px solid var(--glass-b); border-radius:1rem;
+  overflow:hidden; cursor:pointer; transition:border-color .2s,transform .2s;
+}
+.eda-card:hover { border-color:rgba(13,148,136,.4); transform:translateY(-2px); }
+.eda-card img { width:100%; object-fit:cover; max-height:220px; border-radius:0; }
+.eda-card-body { padding:.8rem 1rem; }
+.eda-card-title {
+  font-family:'Inter',sans-serif; font-size:.8rem; font-weight:600;
+  color:var(--text); margin-bottom:.25rem;
+}
+.eda-card-desc {
+  font-family:'Inter',sans-serif; font-size:.72rem; color:var(--muted); line-height:1.45;
+}
+
+/* Lightbox */
+.lightbox {
+  position:fixed; inset:0; z-index:500; background:rgba(0,0,0,.9);
+  display:flex; align-items:center; justify-content:center; padding:1.5rem;
+  opacity:0; pointer-events:none; transition:opacity .25s;
+}
+.lightbox.open { opacity:1; pointer-events:all; }
+.lightbox img { max-width:90vw; max-height:88vh; object-fit:contain; border-radius:1rem; }
+.lightbox-close {
+  position:absolute; top:1rem; right:1rem;
+  background:var(--glass-b); border:1px solid var(--glass-b);
+  color:var(--text); width:36px; height:36px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:1.1rem; transition:background .18s;
+}
+.lightbox-close:hover { background:rgba(255,255,255,.15); }
+
+/* ── VARIABLES TABLE ─────────────────────────────────────── */
+.var-table { width:100%; border-collapse:collapse; }
+.var-table th {
+  font-family:'Inter',sans-serif; font-size:.68rem; font-weight:600;
+  letter-spacing:.12em; text-transform:uppercase; color:var(--muted);
+  text-align:left; padding:.6rem .8rem;
+  border-bottom:2px solid var(--glass-b);
+}
+.var-table td {
+  font-family:'Inter',sans-serif; font-size:.78rem; padding:.65rem .8rem;
+  border-bottom:1px solid var(--glass-b); vertical-align:top;
+}
+.var-table tr:last-child td { border-bottom:none; }
+.var-table tr:hover td { background:var(--glass); }
+.var-name { font-weight:600; color:var(--teal-lt); font-family:'Inter',sans-serif; font-size:.78rem; }
+.var-type-badge {
+  display:inline-block; padding:.15rem .5rem; border-radius:.3rem;
+  font-size:.65rem; font-weight:600; letter-spacing:.06em;
+}
+.var-type-badge.orig { background:rgba(13,148,136,.15); color:var(--teal-lt); }
+.var-type-badge.eng  { background:rgba(202,138,4,.15);  color:var(--gold-lt); }
+.dir-pos { color:var(--green); font-weight:600; }
+.dir-neg { color:var(--red);   font-weight:600; }
+.dir-neu { color:var(--amber); font-weight:600; }
+
+/* ── FEATURE IMPORTANCE CHART ────────────────────────────── */
+.feat-list { display:flex; flex-direction:column; gap:.5rem; }
+.feat-row  { display:grid; grid-template-columns:140px 1fr 52px; align-items:center; gap:.75rem; }
+.feat-label {
+  font-family:'Inter',sans-serif; font-size:.75rem; font-weight:500;
+  color:var(--text); text-align:right; white-space:nowrap;
+}
+.feat-bar-wrap {
+  height:22px; background:rgba(255,255,255,.04);
+  border-radius:.3rem; overflow:hidden; border:1px solid var(--glass-b);
+}
+.feat-bar {
+  height:100%; border-radius:.3rem;
+  background: linear-gradient(90deg, var(--teal) 0%, var(--teal-lt) 100%);
+  transition:width 1.2s cubic-bezier(.25,1,.5,1);
+  width:0;
+}
+.feat-bar.gold { background:linear-gradient(90deg, var(--gold) 0%, var(--gold-lt) 100%); }
+.feat-pct {
+  font-family:'Inter',sans-serif; font-size:.72rem; font-weight:600;
+  color:var(--muted); text-align:right;
+}
+
+/* ── MODEL PERFORMANCE ───────────────────────────────────── */
+.perf-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+.perf-card {
+  background:var(--card); border:1px solid var(--glass-b); border-radius:1rem; padding:1.3rem;
+}
+.perf-card-title {
+  font-family:'Inter',sans-serif; font-size:.72rem; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--teal);
+  margin-bottom:1rem;
+}
+.perf-metric { display:flex; justify-content:space-between; align-items:center;
+  padding:.45rem 0; border-bottom:1px solid var(--glass-b); }
+.perf-metric:last-child { border-bottom:none; }
+.perf-metric-label { font-family:'Inter',sans-serif; font-size:.78rem; color:var(--muted); }
+.perf-metric-val   { font-family:'Inter',sans-serif; font-size:.9rem; font-weight:700; color:var(--text); }
+.perf-metric-val.best { color:var(--green); }
+
+.model-compare-wrap { overflow-x:auto; }
+.model-compare {
+  width:100%; border-collapse:collapse;
+  font-family:'Inter',sans-serif; font-size:.78rem;
+}
+.model-compare th {
+  text-align:left; padding:.55rem .8rem; color:var(--muted);
+  font-size:.68rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  border-bottom:2px solid var(--glass-b);
+}
+.model-compare td {
+  padding:.55rem .8rem; border-bottom:1px solid var(--glass-b); color:var(--text);
+}
+.model-compare tr:last-child td { border-bottom:none; }
+.model-compare .highlight { color:var(--green); font-weight:700; }
+.model-compare .best-row td { background:rgba(16,185,129,.04); }
+
+/* ── PROBABILITY DISTRIBUTION ────────────────────────────── */
+.prob-dist-wrap {
+  background:var(--card); border:1px solid var(--glass-b);
+  border-radius:1rem; padding:1.5rem;
+}
+.prob-dist-title {
+  font-family:'Inter',sans-serif; font-size:.8rem; font-weight:600;
+  color:var(--text); margin-bottom:.3rem;
+}
+.prob-dist-sub {
+  font-family:'Inter',sans-serif; font-size:.72rem; color:var(--muted); margin-bottom:1.2rem;
+}
+.prob-axis {
+  display:flex; justify-content:space-between;
+  font-family:'Inter',sans-serif; font-size:.65rem; color:var(--muted);
+  margin-top:.4rem;
+}
+.prob-bars { display:flex; gap:4px; align-items:flex-end; height:130px; }
+.prob-bar-col { display:flex; flex-direction:column; align-items:center; flex:1; }
+.prob-bar {
+  width:100%; border-radius:.25rem .25rem 0 0;
+  transition:height 1.2s cubic-bezier(.25,1,.5,1);
+}
+.prob-bar.low  { background:linear-gradient(to top, #7f1d1d, #ef4444); }
+.prob-bar.mid  { background:linear-gradient(to top, #78350f, #f59e0b); }
+.prob-bar.high { background:linear-gradient(to top, #064e3b, #10b981); }
+.prob-bar-lbl  { font-family:'Inter',sans-serif; font-size:.6rem; color:var(--muted); margin-top:.3rem; }
+.prob-legend { display:flex; gap:1rem; flex-wrap:wrap; margin-top:1rem; }
+.prob-legend-item { display:flex; align-items:center; gap:.4rem; font-family:'Inter',sans-serif; font-size:.7rem; color:var(--muted); }
+.prob-legend-dot  { width:10px; height:10px; border-radius:2px; }
+
+/* ── SURVIVAL HEATMAP ────────────────────────────────────── */
+.heatmap-grid {
+  display:grid; grid-template-columns:80px repeat(3,1fr);
+  gap:4px; max-width:420px;
+}
+.hm-header { font-family:'Inter',sans-serif; font-size:.68rem; font-weight:600;
+  color:var(--muted); text-align:center; padding:.3rem; }
+.hm-row-label { font-family:'Inter',sans-serif; font-size:.72rem; font-weight:600;
+  color:var(--text); display:flex; align-items:center; }
+.hm-cell {
+  border-radius:.4rem; padding:.8rem .4rem; text-align:center;
+  font-family:'Inter',sans-serif; font-size:.8rem; font-weight:700;
+}
+.hm-cell .sub { font-size:.62rem; font-weight:400; color:rgba(255,255,255,.6); display:block; margin-top:.15rem; }
+
+/* ── LIMITATIONS ─────────────────────────────────────────── */
+.limits-grid {
+  display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:1rem;
+}
+.limit-card {
+  background:var(--card); border:1px solid var(--glass-b); border-radius:1rem;
+  padding:1.1rem; display:flex; gap:.85rem; align-items:flex-start;
+  transition:border-color .2s;
+}
+.limit-card:hover { border-color:rgba(245,158,11,.3); }
+.limit-icon {
+  width:34px; height:34px; border-radius:.5rem; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(245,158,11,.08); border:1px solid rgba(245,158,11,.2);
+}
+.limit-icon svg { width:18px; height:18px; }
+.limit-body h4 {
+  font-family:'Inter',sans-serif; font-size:.8rem; font-weight:600;
+  color:var(--text); margin-bottom:.2rem;
+}
+.limit-body p { font-family:'Inter',sans-serif; font-size:.72rem; color:var(--muted); line-height:1.45; }
+
+/* ── FOOTER ──────────────────────────────────────────────── */
+.footer {
+  padding:3rem 0; text-align:center;
+  border-top:1px solid var(--glass-b);
+}
+.footer-cta {
+  display:inline-flex; align-items:center; gap:.6rem;
+  padding:.85rem 2rem; background:var(--gold); color:#000;
+  font-family:'Inter',sans-serif; font-size:.88rem; font-weight:600;
+  letter-spacing:.05em; text-transform:uppercase;
+  border-radius:3rem; margin-bottom:1.5rem;
+  transition:background .18s,transform .18s;
+}
+.footer-cta:hover { background:var(--gold-lt); transform:translateY(-2px); text-decoration:none; }
+.footer-cta svg { width:17px; height:17px; }
+.footer-meta {
+  font-family:'Inter',sans-serif; font-size:.72rem; color:var(--muted); line-height:1.8;
+}
+.footer-meta strong { color:var(--text); }
+
+/* ── MISC ────────────────────────────────────────────────── */
+.divider { border:none; border-top:1px solid var(--glass-b); margin:1.5rem 0; }
+.tag-row { display:flex; flex-wrap:wrap; gap:.4rem; margin-top:.5rem; }
+.tag {
+  padding:.15rem .55rem; border-radius:.3rem; font-size:.65rem; font-weight:500;
+  background:var(--glass); border:1px solid var(--glass-b); color:var(--muted);
+}
+.callout {
+  background:rgba(13,148,136,.05); border:1px solid rgba(13,148,136,.2);
+  border-radius:.75rem; padding:1rem 1.2rem;
+  font-family:'Merriweather',serif; font-size:.84rem; color:var(--text);
+  line-height:1.7; margin-top:1rem;
+}
+.callout strong { color:var(--teal-lt); }
+
+/* ── PROFILE RANKING TABLE ────────────────────────────────── */
+.ranking-wrap {
+  background:var(--card); border:1px solid var(--glass-b); border-radius:1rem;
+  overflow:hidden;
+}
+.ranking-header {
+  display:grid; grid-template-columns:80px 70px 140px 1fr 140px;
+  padding:.5rem 1rem; background:rgba(255,255,255,.03);
+  border-bottom:2px solid var(--glass-b);
+  font-family:'Inter',sans-serif; font-size:.65rem; font-weight:600;
+  letter-spacing:.1em; text-transform:uppercase; color:var(--muted);
+  gap:.5rem;
+}
+.ranking-row {
+  display:grid; grid-template-columns:80px 70px 140px 1fr 140px;
+  padding:.5rem 1rem; gap:.5rem; align-items:center;
+  border-bottom:1px solid var(--glass-b); transition:background .15s;
+}
+.ranking-row:last-of-type { border-bottom:none; }
+.ranking-row:hover { background:rgba(255,255,255,.03); }
+.ranking-row.r-divider { border-top:2px dashed rgba(255,255,255,.08); }
+.r-gender {
+  font-family:'Inter',sans-serif; font-size:.73rem; font-weight:700;
+  padding:.15rem .45rem; border-radius:.35rem;
+}
+.r-f { color:#e879f9; background:rgba(232,121,249,.08); border:1px solid rgba(232,121,249,.2); }
+.r-m { color:#60a5fa; background:rgba(96,165,250,.08); border:1px solid rgba(96,165,250,.2); }
+.r-class {
+  font-family:'Inter',sans-serif; font-size:.72rem; font-weight:600;
+  padding:.15rem .4rem; border-radius:.3rem;
+}
+.r-1 { color:var(--gold-lt); background:rgba(202,138,4,.1); }
+.r-2 { color:var(--muted);   background:rgba(148,163,184,.1); }
+.r-3 { color:#f87171;        background:rgba(248,113,113,.08); }
+.r-age, .r-fam { font-family:'Inter',sans-serif; font-size:.73rem; color:var(--muted); }
+.r-bar-wrap {
+  display:flex; align-items:center; gap:.6rem;
+}
+.r-bar {
+  height:8px; border-radius:4px; flex-shrink:0;
+  background:rgb(var(--rc));
+  transition:width 1.4s cubic-bezier(.25,1,.5,1);
+  box-shadow:0 0 6px rgba(var(--rc),.35);
+  min-width:3px;
+}
+.r-pct {
+  font-family:'Inter',sans-serif; font-size:.78rem; font-weight:700;
+  color:rgb(var(--rc)); white-space:nowrap;
+}
+.ranking-legend {
+  display:flex; align-items:center; flex-wrap:wrap; gap:.75rem;
+  padding:.65rem 1rem; border-top:1px solid var(--glass-b);
+  background:rgba(255,255,255,.02);
+  font-family:'Inter',sans-serif; font-size:.7rem; color:var(--muted);
+}
+.rl-item { display:flex; align-items:center; gap:.4rem; }
+.rl-dot  { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+
+/* ── TOP / BOTTOM 10 ──────────────────────────────────────── */
+.top-bot-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+.tb-card {
+  background:var(--card); border:1px solid var(--glass-b); border-radius:1rem;
+  overflow:hidden;
+}
+.tb-card-header {
+  display:flex; align-items:center; gap:.5rem;
+  padding:.65rem 1rem; font-family:'Inter',sans-serif;
+  font-size:.72rem; font-weight:600; letter-spacing:.06em;
+  border-bottom:1px solid var(--glass-b);
+}
+.tb-top { color:var(--green); background:rgba(16,185,129,.06); }
+.tb-bot { color:var(--red);   background:rgba(239,68,68,.06); }
+.tb-row {
+  display:grid; grid-template-columns:22px 1fr 44px;
+  align-items:center; gap:.5rem; padding:.45rem 1rem;
+  border-bottom:1px solid var(--glass-b); transition:background .15s;
+}
+.tb-row:last-of-type { border-bottom:none; }
+.tb-row:hover { background:rgba(255,255,255,.02); }
+.tb-rank {
+  font-family:'Inter',sans-serif; font-size:.68rem; font-weight:700;
+  color:var(--muted); text-align:center;
+}
+.tb-profile { font-family:'Inter',sans-serif; font-size:.73rem; color:var(--text); line-height:1.3; }
+.tb-pct { font-family:'Inter',sans-serif; font-size:.82rem; font-weight:700; text-align:right; }
+.tb-pct-high { color:var(--green); }
+.tb-pct-low  { color:var(--red); }
+.tb-insight {
+  display:flex; align-items:flex-start; gap:.45rem;
+  padding:.65rem 1rem; font-family:'Inter',sans-serif;
+  font-size:.7rem; color:var(--muted); line-height:1.5;
+  border-top:1px solid var(--glass-b); background:rgba(255,255,255,.02);
+  flex-shrink:0;
+}
+
+@media (max-width:700px) {
+  .perf-grid    { grid-template-columns:1fr; }
+  .feat-row     { grid-template-columns:110px 1fr 44px; }
+  .nav-links    { display:none; }
+  .heatmap-grid { max-width:100%; }
+  .top-bot-grid { grid-template-columns:1fr; }
+  .ranking-header, .ranking-row { grid-template-columns:70px 60px 1fr 100px; }
+  .ranking-header span:nth-child(3),
+  .ranking-row .r-age { display:none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- NAV                                                      -->
+<!-- ════════════════════════════════════════════════════════ -->
+<nav class="nav">
+  <span class="nav-brand">Titanic <span>Model</span> Explorer</span>
+  <ul class="nav-links">
+    <li><a href="#kpis">KPIs</a></li>
+    <li><a href="#eda">Análisis EDA</a></li>
+    <li><a href="#variables">Variables</a></li>
+    <li><a href="#importancia">Importancia</a></li>
+    <li><a href="#rendimiento">Rendimiento</a></li>
+    <li><a href="#distribucion">Perfiles</a></li>
+    <li><a href="#limitaciones">Limitaciones</a></li>
+  </ul>
+  <a href="index.html" class="nav-sim-btn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    Simulador
+  </a>
+</nav>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-close" onclick="closeLightbox()">&#x2715;</div>
+  <img id="lightbox-img" src="" alt="">
+</div>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- HERO                                                     -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section class="hero-explorer">
+  <div class="container">
+    <p class="section-eyebrow">TFE &middot; Posgrado en Business Analytics &middot; UPC School</p>
+    <h1 class="section-title">Titanic Survival<br>Model Explorer</h1>
+    <p class="section-desc">
+      Análisis completo del modelo predictivo de supervivencia del Titanic. Construido con datos históricos reales de la competición Kaggle y entrenado con Random Forest + Regresión Logística.
+    </p>
+    <div class="hero-tags">
+      <span class="hero-tag teal">Random Forest</span>
+      <span class="hero-tag teal">Regresión Logística</span>
+      <span class="hero-tag gold">SHAP Values</span>
+      <span class="hero-tag gold">891 pasajeros</span>
+      <span class="hero-tag muted">scikit-learn 1.8</span>
+      <span class="hero-tag muted">Python 3.12</span>
+      <span class="hero-tag muted">pandas 2.2</span>
+    </div>
+    <div class="tag-row" style="justify-content:center; margin-top:.2rem;">
+      <span style="font-family:'Inter',sans-serif;font-size:.72rem;color:var(--muted)">
+        Pablo Ferrer-Mayol &nbsp;&middot;&nbsp; Roger Tarridas &nbsp;&middot;&nbsp; Albert Felis &nbsp;&middot;&nbsp; 2026
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- KPIS                                                     -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section id="kpis">
+  <div class="container">
+    <p class="section-eyebrow">Métricas clave</p>
+    <h2 class="section-title">Resultados en números</h2>
+    <p class="section-desc">Datos extraídos directamente del análisis del dataset <em>titanic_enriched.csv</em> y de la evaluación del modelo predictivo.</p>
+
+    <div class="kpi-grid">
+      <div class="kpi-card" style="--kpi-color:var(--teal-lt)">
+        <div class="kpi-val">891</div>
+        <div class="kpi-label">Pasajeros en entrenamiento</div>
+        <div class="kpi-sub">train.csv · Kaggle</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--muted)">
+        <div class="kpi-val">14</div>
+        <div class="kpi-label">Features del modelo</div>
+        <div class="kpi-sub">6 originales + 8 engineered</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--amber)">
+        <div class="kpi-val">38.4%</div>
+        <div class="kpi-label">Tasa global de supervivencia</div>
+        <div class="kpi-sub">342 / 891 pasajeros</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--green)">
+        <div class="kpi-val">74.2%</div>
+        <div class="kpi-label">Supervivencia mujeres</div>
+        <div class="kpi-sub">233 / 314 pasajeras</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--red)">
+        <div class="kpi-val">18.9%</div>
+        <div class="kpi-label">Supervivencia hombres</div>
+        <div class="kpi-sub">109 / 577 pasajeros</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--green)">
+        <div class="kpi-val">82.1%</div>
+        <div class="kpi-label">Accuracy del modelo</div>
+        <div class="kpi-sub">Conjunto de validación (20% del total)</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--teal-lt)">
+        <div class="kpi-val">85.6%</div>
+        <div class="kpi-label">ROC-AUC</div>
+        <div class="kpi-sub">Validación · Random Forest</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--gold-lt)">
+        <div class="kpi-val">82.6%</div>
+        <div class="kpi-label">Precisión (validación cruzada)</div>
+        <div class="kpi-sub">&plusmn;2.0% margen de variación</div>
+      </div>
+      <div class="kpi-card" style="--kpi-color:var(--green)">
+        <div class="kpi-val">96.8%</div>
+        <div class="kpi-label">Máx. supervivencia</div>
+        <div class="kpi-sub">Mujer &middot; 1ª clase (histórico)</div>
+      </div>
+    </div>
+
+    <!-- Mini heatmap gender × class -->
+    <div style="margin-top:2rem;">
+      <p class="section-eyebrow" style="margin-bottom:.8rem;">Supervivencia histórica: Género &times; Clase</p>
+      <div class="heatmap-grid">
+        <div></div>
+        <div class="hm-header">1ª Clase</div>
+        <div class="hm-header">2ª Clase</div>
+        <div class="hm-header">3ª Clase</div>
+        <div class="hm-row-label">Mujer</div>
+        <div class="hm-cell" style="background:rgba(16,185,129,.65);color:#fff">96.8%<span class="sub">n=97</span></div>
+        <div class="hm-cell" style="background:rgba(16,185,129,.55);color:#fff">92.1%<span class="sub">n=70</span></div>
+        <div class="hm-cell" style="background:rgba(245,158,11,.35);color:#fff">50.0%<span class="sub">n=72</span></div>
+        <div class="hm-row-label">Hombre</div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.25);color:#fff">36.9%<span class="sub">n=45</span></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.18);color:#fff">15.7%<span class="sub">n=17</span></div>
+        <div class="hm-cell" style="background:rgba(239,68,68,.35);color:#fff">13.5%<span class="sub">n=47</span></div>
+      </div>
+      <p style="font-family:'Inter',sans-serif;font-size:.7rem;color:var(--muted);margin-top:.6rem;">
+        Fuente: análisis del train.csv (titanic_enriched.csv). Tasas calculadas sobre datos reales del naufragio.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- EDA                                                      -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section id="eda">
+  <div class="container">
+    <p class="section-eyebrow">Análisis exploratorio de datos</p>
+    <h2 class="section-title">Visualizaciones del EDA</h2>
+    <p class="section-desc">Gráficos generados en el notebook <em>TFE_Titanic_ML.ipynb</em> a partir del dataset original. Haz clic en cualquier gráfico para ampliar.</p>
+
+    <div class="eda-grid">
+      <div class="eda-card" onclick="openLightbox('../output/eda_supervivencia.png')">
+        <img src="../output/eda_supervivencia.png" alt="Distribución de supervivencia">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Distribución de la variable objetivo</div>
+          <div class="eda-card-desc">38.4% de supervivientes frente a 61.6% de fallecidos. El dataset presenta desequilibrio de clases que se tuvo en cuenta en la evaluación del modelo.</div>
+        </div>
+      </div>
+      <div class="eda-card" onclick="openLightbox('../output/eda_genero.png')">
+        <img src="../output/eda_genero.png" alt="Supervivencia por género">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Supervivencia por género</div>
+          <div class="eda-card-desc">Las mujeres sobrevivieron al 74.2% frente al 18.9% de los hombres. El género es la variable más importante del modelo (importancia Gini: 28.7%).</div>
+        </div>
+      </div>
+      <div class="eda-card" onclick="openLightbox('../output/eda_clase.png')">
+        <img src="../output/eda_clase.png" alt="Supervivencia por clase">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Supervivencia por clase del billete</div>
+          <div class="eda-card-desc">1ª clase: 63% &middot; 2ª clase: 47.3% &middot; 3ª clase: 24.2%. La clase determina la posición física en el barco y el acceso a los botes.</div>
+        </div>
+      </div>
+      <div class="eda-card" onclick="openLightbox('../output/eda_heatmap_genero_clase.png')">
+        <img src="../output/eda_heatmap_genero_clase.png" alt="Heatmap género × clase">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Heatmap: Género &times; Clase</div>
+          <div class="eda-card-desc">Diferencia de 83.3 puntos porcentuales entre el perfil de mayor supervivencia (mujer 1ª clase) y el de menor (hombre 3ª clase).</div>
+        </div>
+      </div>
+      <div class="eda-card" onclick="openLightbox('../output/eda_edad.png')">
+        <img src="../output/eda_edad.png" alt="Supervivencia por edad">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Análisis de la edad</div>
+          <div class="eda-card-desc">Los niños (&lt;12) tenían mayor tasa de supervivencia. La edad tiene un efecto moderado (7.95% importancia) cuando se controla por género y clase.</div>
+        </div>
+      </div>
+      <div class="eda-card" onclick="openLightbox('../output/eda_familia.png')">
+        <img src="../output/eda_familia.png" alt="Supervivencia por tamaño familiar">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Tamaño familiar y supervivencia</div>
+          <div class="eda-card-desc">Familias pequeñas (2-4): ~57.8% &middot; Solo: ~30.4% &middot; Familia grande (5+): ~16.1%. El tamaño familiar tiene un efecto no lineal.</div>
+        </div>
+      </div>
+      <div class="eda-card" onclick="openLightbox('../output/eda_nulos.png')">
+        <img src="../output/eda_nulos.png" alt="Análisis de valores nulos">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Análisis de valores nulos</div>
+          <div class="eda-card-desc">Cabin: 77.1% nulos &middot; Age: 19.9% nulos &middot; Embarked: 2 nulos. Cada columna recibió una estrategia de imputación diferente.</div>
+        </div>
+      </div>
+      <div class="eda-card" onclick="openLightbox('../output/eda_embarque_tarifa.png')">
+        <img src="../output/eda_embarque_tarifa.png" alt="Puerto y tarifa">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Puerto de embarque y tarifa</div>
+          <div class="eda-card-desc">Cherburgo tenía mayor proporción de pasajeros de 1ª clase. La tarifa actúa como proxy continuo del nivel económico y la posición en el barco.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- VARIABLES                                                -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section id="variables">
+  <div class="container">
+    <p class="section-eyebrow">Feature Engineering</p>
+    <h2 class="section-title">Variables del modelo</h2>
+    <p class="section-desc">El modelo utiliza 14 variables. 6 son originales del dataset de Kaggle y 8 fueron creadas a partir de ellas (variables derivadas). La columna "Peso" indica cuánto contribuyó cada variable a las decisiones del modelo.</p>
+
+    <div style="overflow-x:auto;">
+      <table class="var-table">
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Tipo</th>
+            <th>Descripción</th>
+            <th>Dirección</th>
+            <th style="text-align:right">Peso</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="var-name">Sex_num</span></td>
+            <td><span class="var-type-badge orig">Original</span></td>
+            <td>Género del pasajero. 1 = mujer, 0 = hombre. Derivado de la columna <em>Sex</em>.</td>
+            <td><span class="dir-pos">+++ Mujer</span></td>
+            <td style="text-align:right;font-weight:700;color:var(--gold-lt)">28.7%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">Title_num</span></td>
+            <td><span class="var-type-badge eng">Engineered</span></td>
+            <td>Título social extraído del nombre (Mr, Mrs, Miss, Master, Rare). Condensa género, edad y posición social.</td>
+            <td><span class="dir-pos">+ Mrs/Miss/Master</span></td>
+            <td style="text-align:right;font-weight:700;color:var(--teal-lt)">14.7%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">Fare</span></td>
+            <td><span class="var-type-badge orig">Original</span></td>
+            <td>Precio del billete en libras esterlinas (£). Proxy continuo del nivel económico y la ubicación del camarote.</td>
+            <td><span class="dir-pos">+ Mayor tarifa</span></td>
+            <td style="text-align:right;font-weight:700;color:var(--teal-lt)">12.7%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">Age</span></td>
+            <td><span class="var-type-badge orig">Original</span></td>
+            <td>Edad en años. ~19.9% de nulos imputados con la mediana por grupo (Título + Pclass).</td>
+            <td><span class="dir-neu">~ Niños +, seniors -</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">8.0%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">Pclass</span></td>
+            <td><span class="var-type-badge orig">Original</span></td>
+            <td>Clase del billete: 1, 2 o 3. Proxy del nivel socioeconómico y de la posición física en el barco.</td>
+            <td><span class="dir-neg">- 3ª clase</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">7.6%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">HasCabin</span></td>
+            <td><span class="var-type-badge eng">Engineered</span></td>
+            <td>1 si el pasajero tiene cabina registrada, 0 si no. Creada porque el 77.1% de valores de Cabin son nulos.</td>
+            <td><span class="dir-pos">+ Con cabina</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">6.1%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">FamilySize</span></td>
+            <td><span class="var-type-badge eng">Engineered</span></td>
+            <td>Tamaño total del grupo familiar: SibSp + Parch + 1 (el propio pasajero).</td>
+            <td><span class="dir-neu">~ Pequeña +, grande -</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">4.5%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">IsAlone</span></td>
+            <td><span class="var-type-badge eng">Engineered</span></td>
+            <td>1 si FamilySize == 1 (viaja solo), 0 si va acompañado.</td>
+            <td><span class="dir-neg">- Viajar solo</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">3.8%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">AgeGroup_num</span></td>
+            <td><span class="var-type-badge eng">Engineered</span></td>
+            <td>Grupo de edad ordinal: 0=Niño, 1=Adolescente, 2=Adulto joven, 3=Adulto, 4=Senior.</td>
+            <td><span class="dir-neu">~ Niño +, senior -</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">3.2%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">FareBand_num</span></td>
+            <td><span class="var-type-badge eng">Engineered</span></td>
+            <td>Cuartil de la tarifa: 0=Bajo, 1=Medio-bajo, 2=Medio-alto, 3=Alto.</td>
+            <td><span class="dir-pos">+ Mayor cuartil</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">3.0%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">FamilyCat_num</span></td>
+            <td><span class="var-type-badge eng">Engineered</span></td>
+            <td>Categoría familiar: 0=Solo, 1=Familia pequeña (2-4), 2=Familia grande (5+).</td>
+            <td><span class="dir-neu">~ Pequeña +</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">2.5%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">Embarked_num</span></td>
+            <td><span class="var-type-badge orig">Original</span></td>
+            <td>Puerto de embarque codificado: C=0 (Cherburgo), S=1 (Southampton), Q=2 (Queenstown).</td>
+            <td><span class="dir-neu">~ Leve efecto</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">2.2%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">SibSp</span></td>
+            <td><span class="var-type-badge orig">Original</span></td>
+            <td>Número de hermanos y/o cónyuge a bordo. Componente de FamilySize.</td>
+            <td><span class="dir-neu">~ Efecto moderado</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">1.9%</td>
+          </tr>
+          <tr>
+            <td><span class="var-name">Parch</span></td>
+            <td><span class="var-type-badge orig">Original</span></td>
+            <td>Número de padres y/o hijos a bordo. Componente de FamilySize.</td>
+            <td><span class="dir-neu">~ Efecto moderado</span></td>
+            <td style="text-align:right;font-weight:600;color:var(--muted)">1.8%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- IMPORTANCIA                                              -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section id="importancia">
+  <div class="container">
+    <p class="section-eyebrow">Análisis del modelo &middot; Importancia de variables</p>
+    <h2 class="section-title">Importancia de factores</h2>
+    <p class="section-desc">Peso relativo de cada variable en las predicciones del modelo. Indica cuánto influye cada factor a la hora de calcular la probabilidad de supervivencia de un pasajero. Cuanto mayor es el valor, más determinante fue esa variable en el conjunto de datos.</p>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:start;">
+      <div>
+        <div class="feat-list" id="feat-list">
+          <!-- Populated by JS -->
+        </div>
+        <div class="callout" style="margin-top:1.5rem;">
+          <strong>Los 3 factores más influyentes</strong> — Género, Título social y Tarifa — concentran el <strong>56.1%</strong> del peso total del modelo. El género (de forma directa y también a través del título social) domina la predicción, seguido del nivel económico representado por la tarifa del billete.
+        </div>
+      </div>
+      <div>
+        <div class="eda-card" onclick="openLightbox('../output/shap_bar.png')" style="cursor:pointer;">
+          <img src="../output/shap_bar.png" alt="SHAP bar plot">
+          <div class="eda-card-body">
+            <div class="eda-card-title">SHAP — Importancia global media</div>
+            <div class="eda-card-desc">Importancia media de cada variable calculada con SHAP: cuánto contribuye en promedio cada factor a desplazar la predicción del modelo, tanto en positivo como en negativo.</div>
+          </div>
+        </div>
+        <div class="eda-card" onclick="openLightbox('../output/shap_summary.png')" style="cursor:pointer;margin-top:1rem;">
+          <img src="../output/shap_summary.png" alt="SHAP summary plot">
+          <div class="eda-card-body">
+            <div class="eda-card-title">SHAP: Contribución individual por pasajero</div>
+            <div class="eda-card-desc">Cada punto representa un pasajero. El color indica el valor de la variable (rojo = alto, azul = bajo). La posición horizontal muestra si esa variable empujó la predicción hacia "sobrevive" (derecha) o "no sobrevive" (izquierda).</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- RENDIMIENTO                                              -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section id="rendimiento">
+  <div class="container">
+    <p class="section-eyebrow">Evaluación del modelo</p>
+    <h2 class="section-title">Rendimiento y métricas</h2>
+    <p class="section-desc">Comparación entre el modelo base (Regresión Logística) y el modelo principal (Random Forest con búsqueda automática de parámetros). Ambos evaluados con validación cruzada de 5 bloques para garantizar resultados fiables con el tamaño de dataset disponible.</p>
+
+    <div class="perf-grid" style="margin-bottom:2rem;">
+      <div class="perf-card">
+        <div class="perf-card-title">Regresión Logística &mdash; Modelo base</div>
+        <div class="perf-metric"><span class="perf-metric-label">Precisión (validación)</span><span class="perf-metric-val">82.1%</span></div>
+        <div class="perf-metric"><span class="perf-metric-label">ROC-AUC (validación)</span><span class="perf-metric-val">85.6%</span></div>
+        <div class="perf-metric"><span class="perf-metric-label">Precisión media (val. cruzada)</span><span class="perf-metric-val">81.0% &plusmn; 0.7%</span></div>
+        <div class="perf-metric"><span class="perf-metric-label">Tipo de modelo</span><span class="perf-metric-val" style="font-size:.78rem">Lineal, interpretable</span></div>
+        <div class="perf-metric"><span class="perf-metric-label">Uso</span><span class="perf-metric-val" style="font-size:.78rem">Referencia y comparativa</span></div>
+      </div>
+      <div class="perf-card" style="border-color:rgba(16,185,129,.3);">
+        <div class="perf-card-title" style="color:var(--green);">Random Forest &mdash; Modelo principal</div>
+        <div class="perf-metric"><span class="perf-metric-label">Precisión (validación)</span><span class="perf-metric-val">81.6%</span></div>
+        <div class="perf-metric"><span class="perf-metric-label">ROC-AUC (validación)</span><span class="perf-metric-val">85.4%</span></div>
+        <div class="perf-metric"><span class="perf-metric-label">Precisión media (val. cruzada)</span><span class="perf-metric-val best">82.6% &plusmn; 2.0%</span></div>
+        <div class="perf-metric"><span class="perf-metric-label">Configuración</span><span class="perf-metric-val" style="font-size:.78rem">200 árboles de decisión</span></div>
+        <div class="perf-metric"><span class="perf-metric-label">Optimización</span><span class="perf-metric-val" style="font-size:.78rem">Búsqueda automática de parámetros</span></div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;">
+      <div class="eda-card" onclick="openLightbox('../output/confusion_matrices.png')">
+        <img src="../output/confusion_matrices.png" alt="Matrices de confusión">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Matrices de confusión</div>
+          <div class="eda-card-desc">Distribución de verdaderos positivos, verdaderos negativos, falsos positivos y falsos negativos para los tres modelos evaluados.</div>
+        </div>
+      </div>
+      <div class="eda-card" onclick="openLightbox('../output/roc_curves.png')">
+        <img src="../output/roc_curves.png" alt="Curvas ROC">
+        <div class="eda-card-body">
+          <div class="eda-card-title">Curvas ROC comparativas</div>
+          <div class="eda-card-desc">Logistic Regression (AUC=0.856) vs. RF Base (AUC=0.854) vs. RF Optimizado. El área bajo la curva indica poder discriminatorio.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:1.5rem;">
+      <strong>¿Por qué se eligió el Random Forest?</strong> Aunque la Regresión Logística obtiene mayor precisión puntual en el conjunto de validación, el Random Forest muestra mejor resultado en la validación cruzada (82.6% vs. 81.0%), lo que indica mejor capacidad de generalización. Además, permite calcular valores SHAP para explicar cada predicción individualmente, y puede capturar relaciones complejas entre variables. Con solo 891 muestras de entrenamiento, la validación cruzada es más fiable que evaluar sobre un único subconjunto.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- DISTRIBUCIÓN                                             -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section id="distribucion">
+  <div class="container">
+    <p class="section-eyebrow">Análisis de perfiles &middot; Salida del modelo</p>
+    <h2 class="section-title">Ranking de perfiles de supervivencia</h2>
+    <p class="section-desc">El modelo asigna una probabilidad distinta a cada combinación de características. Esta tabla muestra cómo cambia la predicción según el perfil del pasajero, de mayor a menor probabilidad estimada. Probabilidades calculadas con las tasas históricas reales del Titanic ajustadas por el peso de cada variable en el modelo.</p>
+
+    <!-- ── RANKING TABLE ──────────────────────────────────── -->
+    <div class="ranking-wrap">
+      <div class="ranking-header">
+        <span>Género</span>
+        <span>Clase</span>
+        <span>Edad</span>
+        <span>Compañía</span>
+        <span style="text-align:right">Probabilidad</span>
+      </div>
+
+      <div class="ranking-row" style="--rp:97;--rc:16,185,129">
+        <span class="r-gender r-f">Mujer</span><span class="r-class r-1">1ª clase</span>
+        <span class="r-age">Joven adulta</span><span class="r-fam">Familia pequeña</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:97%"></div><span class="r-pct">97%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:97;--rc:16,185,129">
+        <span class="r-gender r-f">Mujer</span><span class="r-class r-2">2ª clase</span>
+        <span class="r-age">Joven adulta</span><span class="r-fam">Familia pequeña</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:97%"></div><span class="r-pct">97%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:89;--rc:16,185,129">
+        <span class="r-gender r-f">Mujer</span><span class="r-class r-1">1ª clase</span>
+        <span class="r-age">Adulta (36–60)</span><span class="r-fam">Solo</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:89%"></div><span class="r-pct">89%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:84;--rc:16,185,129">
+        <span class="r-gender r-f">Mujer</span><span class="r-class r-1">1ª clase</span>
+        <span class="r-age">Senior (60+)</span><span class="r-fam">Solo</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:84%"></div><span class="r-pct">84%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:84;--rc:16,185,129">
+        <span class="r-gender r-f">Mujer</span><span class="r-class r-2">2ª clase</span>
+        <span class="r-age">Adulta (36–60)</span><span class="r-fam">Solo</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:84%"></div><span class="r-pct">84%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:79;--rc:16,185,129">
+        <span class="r-gender r-f">Mujer</span><span class="r-class r-2">2ª clase</span>
+        <span class="r-age">Senior (60+)</span><span class="r-fam">Solo</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:79%"></div><span class="r-pct">79%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:69;--rc:16,185,129">
+        <span class="r-gender r-f">Mujer</span><span class="r-class r-3">3ª clase</span>
+        <span class="r-age">Niña (&lt;12)</span><span class="r-fam">Familia pequeña</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:69%"></div><span class="r-pct">69%</span></div>
+      </div>
+      <div class="ranking-row r-divider" style="--rp:56;--rc:245,158,11">
+        <span class="r-gender r-m">Hombre</span><span class="r-class r-1">1ª clase</span>
+        <span class="r-age">Niño (&lt;12)</span><span class="r-fam">Familia pequeña</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:56%"></div><span class="r-pct">56%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:45;--rc:245,158,11">
+        <span class="r-gender r-m">Hombre</span><span class="r-class r-1">1ª clase</span>
+        <span class="r-age">Joven adulto</span><span class="r-fam">Familia pequeña</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:45%"></div><span class="r-pct">45%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:42;--rc:245,158,11">
+        <span class="r-gender r-f">Mujer</span><span class="r-class r-3">3ª clase</span>
+        <span class="r-age">Adulta (36–60)</span><span class="r-fam">Solo</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:42%"></div><span class="r-pct">42%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:35;--rc:245,158,11">
+        <span class="r-gender r-m">Hombre</span><span class="r-class r-2">2ª clase</span>
+        <span class="r-age">Niño (&lt;12)</span><span class="r-fam">Familia pequeña</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:35%"></div><span class="r-pct">35%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:29;--rc:245,158,11">
+        <span class="r-gender r-m">Hombre</span><span class="r-class r-1">1ª clase</span>
+        <span class="r-age">Adulto (36–60)</span><span class="r-fam">Solo</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:29%"></div><span class="r-pct">29%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:28;--rc:245,158,11">
+        <span class="r-gender r-f">Mujer</span><span class="r-class r-3">3ª clase</span>
+        <span class="r-age">Senior (60+)</span><span class="r-fam">Familia grande</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:28%"></div><span class="r-pct">28%</span></div>
+      </div>
+      <div class="ranking-row r-divider" style="--rp:13;--rc:239,68,68">
+        <span class="r-gender r-m">Hombre</span><span class="r-class r-1">1ª clase</span>
+        <span class="r-age">Senior (60+)</span><span class="r-fam">Familia grande</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:13%"></div><span class="r-pct">13%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:8;--rc:239,68,68">
+        <span class="r-gender r-m">Hombre</span><span class="r-class r-2">2ª clase</span>
+        <span class="r-age">Adulto (36–60)</span><span class="r-fam">Solo</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:8%"></div><span class="r-pct">8%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:8;--rc:239,68,68">
+        <span class="r-gender r-m">Hombre</span><span class="r-class r-3">3ª clase</span>
+        <span class="r-age">Joven adulto</span><span class="r-fam">Solo</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:8%"></div><span class="r-pct">8%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:3;--rc:239,68,68">
+        <span class="r-gender r-m">Hombre</span><span class="r-class r-3">3ª clase</span>
+        <span class="r-age">Adulto (36–60)</span><span class="r-fam">Familia grande</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:3%"></div><span class="r-pct">3%</span></div>
+      </div>
+      <div class="ranking-row" style="--rp:3;--rc:239,68,68">
+        <span class="r-gender r-m">Hombre</span><span class="r-class r-3">3ª clase</span>
+        <span class="r-age">Senior (60+)</span><span class="r-fam">Familia grande</span>
+        <div class="r-bar-wrap"><div class="r-bar" style="width:3%"></div><span class="r-pct">3%</span></div>
+      </div>
+
+      <div class="ranking-legend">
+        <div class="rl-item"><div class="rl-dot" style="background:#10b981"></div>Probabilidad alta (&gt;60%)</div>
+        <div class="rl-item"><div class="rl-dot" style="background:#f59e0b"></div>Probabilidad media (25–60%)</div>
+        <div class="rl-item"><div class="rl-dot" style="background:#ef4444"></div>Probabilidad baja (&lt;25%)</div>
+        <div class="rl-item" style="margin-left:auto;font-size:.65rem;color:var(--muted)">Basado en tasas históricas reales del Titanic</div>
+      </div>
+    </div>
+
+    <!-- ── TOP 10 / BOTTOM 10 ─────────────────────────────── -->
+    <div style="margin-top:2.5rem;">
+      <p class="section-eyebrow" style="margin-bottom:1rem;">Perfiles extremos del modelo</p>
+      <div class="top-bot-grid">
+
+        <!-- TOP 10 -->
+        <div class="tb-card">
+          <div class="tb-card-header tb-top">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="18,15 12,9 6,15"/></svg>
+            Top 10 &mdash; Mayor probabilidad de supervivencia
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">1</div>
+            <div class="tb-profile"><strong>Mujer &middot; 1ª clase &middot; Niña &middot; Familia pequeña</strong></div>
+            <div class="tb-pct tb-pct-high">97%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">2</div>
+            <div class="tb-profile"><strong>Mujer &middot; 1ª clase &middot; Joven adulta &middot; Familia pequeña</strong></div>
+            <div class="tb-pct tb-pct-high">97%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">3</div>
+            <div class="tb-profile"><strong>Mujer &middot; 2ª clase &middot; Adolescente &middot; Familia pequeña</strong></div>
+            <div class="tb-pct tb-pct-high">97%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">4</div>
+            <div class="tb-profile"><strong>Mujer &middot; 2ª clase &middot; Joven adulta &middot; Familia pequeña</strong></div>
+            <div class="tb-pct tb-pct-high">97%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">5</div>
+            <div class="tb-profile">Mujer &middot; 1ª clase &middot; Adulta &middot; Solo</div>
+            <div class="tb-pct tb-pct-high">89%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">6</div>
+            <div class="tb-profile">Mujer &middot; 1ª clase &middot; Senior &middot; Solo</div>
+            <div class="tb-pct tb-pct-high">84%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">7</div>
+            <div class="tb-profile">Mujer &middot; 2ª clase &middot; Adulta &middot; Solo</div>
+            <div class="tb-pct tb-pct-high">84%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">8</div>
+            <div class="tb-profile">Mujer &middot; 2ª clase &middot; Senior &middot; Solo</div>
+            <div class="tb-pct tb-pct-high">79%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">9</div>
+            <div class="tb-profile">Mujer &middot; 3ª clase &middot; Niña &middot; Familia pequeña</div>
+            <div class="tb-pct tb-pct-high">69%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">10</div>
+            <div class="tb-profile">Mujer &middot; 3ª clase &middot; Adolescente &middot; Familia pequeña</div>
+            <div class="tb-pct tb-pct-high">62%</div>
+          </div>
+          <div class="tb-insight">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            Los 8 primeros perfiles son exclusivamente mujeres. Incluso una mujer mayor de 60 años viajando sola tenía un 84% de probabilidad de sobrevivir.
+          </div>
+        </div>
+
+        <!-- BOTTOM 10 -->
+        <div class="tb-card">
+          <div class="tb-card-header tb-bot">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><polyline points="6,9 12,15 18,9"/></svg>
+            Bottom 10 &mdash; Menor probabilidad de supervivencia
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">1</div>
+            <div class="tb-profile"><strong>Hombre &middot; 3ª clase &middot; Senior &middot; Familia grande</strong></div>
+            <div class="tb-pct tb-pct-low">3%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">2</div>
+            <div class="tb-profile"><strong>Hombre &middot; 3ª clase &middot; Adulto &middot; Familia grande</strong></div>
+            <div class="tb-pct tb-pct-low">3%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">3</div>
+            <div class="tb-profile"><strong>Hombre &middot; 2ª clase &middot; Senior &middot; Familia grande</strong></div>
+            <div class="tb-pct tb-pct-low">3%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">4</div>
+            <div class="tb-profile">Hombre &middot; 3ª clase &middot; Senior &middot; Solo</div>
+            <div class="tb-pct tb-pct-low">3%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">5</div>
+            <div class="tb-profile">Hombre &middot; 2ª clase &middot; Senior &middot; Solo</div>
+            <div class="tb-pct tb-pct-low">3%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">6</div>
+            <div class="tb-profile">Hombre &middot; 2ª clase &middot; Adulto &middot; Familia grande</div>
+            <div class="tb-pct tb-pct-low">3%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">7</div>
+            <div class="tb-profile">Hombre &middot; 3ª clase &middot; Adulto &middot; Solo</div>
+            <div class="tb-pct tb-pct-low">6%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">8</div>
+            <div class="tb-profile">Hombre &middot; 2ª clase &middot; Adulto &middot; Solo</div>
+            <div class="tb-pct tb-pct-low">8%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">9</div>
+            <div class="tb-profile">Hombre &middot; 3ª clase &middot; Joven adulto &middot; Solo</div>
+            <div class="tb-pct tb-pct-low">8%</div>
+          </div>
+          <div class="tb-row">
+            <div class="tb-rank">10</div>
+            <div class="tb-profile">Hombre &middot; 1ª clase &middot; Senior &middot; Familia grande</div>
+            <div class="tb-pct tb-pct-low">13%</div>
+          </div>
+          <div class="tb-insight">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" width="13" height="13"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+            La diferencia entre el puesto 1 (97%) y el puesto 10 del bottom (13%) es de 84 puntos. Ni siquiera ser de 1ª clase compensaba ser hombre mayor con familia grande.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- LIMITACIONES                                             -->
+<!-- ════════════════════════════════════════════════════════ -->
+<section id="limitaciones">
+  <div class="container">
+    <p class="section-eyebrow">Análisis crítico</p>
+    <h2 class="section-title">Limitaciones del modelo</h2>
+    <p class="section-desc">Todo modelo tiene limitaciones. Reconocerlas es parte fundamental del rigor académico y es uno de los criterios de evaluación del TFE.</p>
+
+    <div class="limits-grid">
+      <div class="limit-card">
+        <div class="limit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <div class="limit-body">
+          <h4>Dataset pequeño</h4>
+          <p>El conjunto de entrenamiento tiene solo 891 muestras, lo que limita la complejidad de los modelos y aumenta el riesgo de sobreajuste. Los modelos de deep learning no son viables con este tamaño.</p>
+        </div>
+      </div>
+      <div class="limit-card">
+        <div class="limit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+        </div>
+        <div class="limit-body">
+          <h4>Valores faltantes abundantes</h4>
+          <p>La columna Cabin tiene un 77.1% de nulos; Age, un 19.9%. Las estrategias de imputación introducen supuestos que pueden no reflejar la realidad histórica exacta.</p>
+        </div>
+      </div>
+      <div class="limit-card">
+        <div class="limit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        </div>
+        <div class="limit-body">
+          <h4>Variables indirectas (proxies)</h4>
+          <p>La clase del billete mezcla dinero, ubicación física y acceso a botes. La tarifa captura nivel económico pero no la posición exacta del camarote. Las variables no miden directamente lo que explican.</p>
+        </div>
+      </div>
+      <div class="limit-card">
+        <div class="limit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        </div>
+        <div class="limit-body">
+          <h4>Condiciones de evacuación no registradas</h4>
+          <p>Factores como la cercanía al bote al momento del impacto, el estado de las escaleras, el comportamiento del personal o las decisiones individuales no están capturados en ninguna variable.</p>
+        </div>
+      </div>
+      <div class="limit-card">
+        <div class="limit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M14.5 10c-.83 0-1.5-.67-1.5-1.5v-5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5z"/><path d="M20.5 10H19V8.5c0-.83.67-1.5 1.5-1.5s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/><path d="M9.5 14c.83 0 1.5.67 1.5 1.5v5c0 .83-.67 1.5-1.5 1.5S8 21.33 8 20.5v-5c0-.83.67-1.5 1.5-1.5z"/><path d="M3.5 14H5v1.5c0 .83-.67 1.5-1.5 1.5S2 16.33 2 15.5 2.67 14 3.5 14z"/><path d="M14 14.5c0-.83.67-1.5 1.5-1.5h5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5h-5c-.83 0-1.5-.67-1.5-1.5z"/><path d="M15.5 19H14v1.5c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5-.67-1.5-1.5-1.5z"/><path d="M10 9.5C10 8.67 9.33 8 8.5 8h-5C2.67 8 2 8.67 2 9.5S2.67 11 3.5 11h5c.83 0 1.5-.67 1.5-1.5z"/><path d="M8.5 5H10V3.5C10 2.67 9.33 2 8.5 2S7 2.67 7 3.5 7.67 5 8.5 5z"/></svg>
+        </div>
+        <div class="limit-body">
+          <h4>Patrones, no causalidad</h4>
+          <p>El modelo identifica correlaciones estadísticas en los datos históricos, no relaciones causales. Que ser mujer prediga supervivencia no implica que el género <em>cause</em> la supervivencia: el mecanismo causal es el protocolo de evacuación.</p>
+        </div>
+      </div>
+      <div class="limit-card">
+        <div class="limit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+        </div>
+        <div class="limit-body">
+          <h4>Pclass: variable compuesta</h4>
+          <p>La clase del billete mezcla tres dimensiones distintas: poder adquisitivo, posición física del camarote en el barco y estatus social. No es posible separar estos efectos con las variables disponibles.</p>
+        </div>
+      </div>
+      <div class="limit-card">
+        <div class="limit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </div>
+        <div class="limit-body">
+          <h4>Cabin: 77% de nulos</h4>
+          <p>La información de cabina (que indicaría la cubierta exacta del barco y la distancia a los botes) está prácticamente ausente. Se optó por crear la variable binaria HasCabin, perdiendo precisión de localización.</p>
+        </div>
+      </div>
+      <div class="limit-card">
+        <div class="limit-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+        </div>
+        <div class="limit-body">
+          <h4>Datos históricos incompletos</h4>
+          <p>El dataset cubre 1.309 de los ~2.224 pasajeros y crew (59%). Los 891 registros de entrenamiento excluyen tripulación y parte del pasaje. El resultado depende de un registro histórico con más de 110 años.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:1.5rem;">
+      A pesar de estas limitaciones, el modelo acierta en el <strong>82.1% de los casos</strong> y distingue bien entre supervivientes y fallecidos (ROC-AUC de 85.6%), valores consistentes con análisis académicos similares sobre el Titanic. El valor del trabajo no está en predecir con perfección, sino en <strong>identificar e interpretar los patrones históricos</strong> que explican quién sobrevivió y por qué.
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════ -->
+<!-- FOOTER                                                   -->
+<!-- ════════════════════════════════════════════════════════ -->
+<footer class="footer">
+  <div class="container">
+    <a href="index.html" class="footer-cta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Probar el simulador interactivo
+    </a>
+    <div class="footer-meta">
+      <strong>Titanic Survival Model Explorer</strong><br>
+      TFE &middot; Posgrado en Business Analytics (PBA) &middot; UPC School &middot; 3ª Edición &middot; 2026<br>
+      Pablo Ferrer-Mayol &nbsp;&middot;&nbsp; Roger Tarridas &nbsp;&middot;&nbsp; Albert Felis<br>
+      <span style="color:rgba(148,163,184,.4);font-size:.65rem;margin-top:.4rem;display:block;">
+        Modelo: Random Forest &middot; scikit-learn 1.8 &middot; Python 3.12 &middot; Dataset: Kaggle Titanic Competition
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ── FEATURE IMPORTANCE BARS ─────────────────────────────── */
+const FEATURES = [
+  {name:'Sex_num',      imp:28.73, gold:true},
+  {name:'Title_num',   imp:14.69, gold:false},
+  {name:'Fare',        imp:12.67, gold:false},
+  {name:'Age',         imp:7.95,  gold:false},
+  {name:'Pclass',      imp:7.62,  gold:false},
+  {name:'HasCabin',    imp:6.12,  gold:false},
+  {name:'FamilySize',  imp:4.52,  gold:false},
+  {name:'IsAlone',     imp:3.81,  gold:false},
+  {name:'AgeGroup_num',imp:3.22,  gold:false},
+  {name:'FareBand_num',imp:2.97,  gold:false},
+  {name:'FamilyCat_num',imp:2.45, gold:false},
+  {name:'Embarked_num',imp:2.21,  gold:false},
+  {name:'SibSp',       imp:1.89,  gold:false},
+  {name:'Parch',       imp:1.75,  gold:false},
+];
+const maxImp = 28.73;
+const list = document.getElementById('feat-list');
+list.innerHTML = FEATURES.map(f => `
+  <div class="feat-row">
+    <span class="feat-label">${f.name}</span>
+    <div class="feat-bar-wrap">
+      <div class="feat-bar${f.gold?' gold':''}" data-w="${(f.imp/maxImp*100).toFixed(1)}" style="width:0%"></div>
+    </div>
+    <span class="feat-pct">${f.imp.toFixed(1)}%</span>
+  </div>`).join('');
+
+/* ── PROBABILITY BARS ────────────────────────────────────── */
+function animateBars(){
+  document.querySelectorAll('.feat-bar').forEach(el => {
+    el.style.width = el.dataset.w + '%';
+  });
+  const maxH = 130;
+  document.querySelectorAll('.prob-bar').forEach(el => {
+    const h = parseInt(el.dataset.h);
+    el.style.height = (h / 100 * maxH) + 'px';
+  });
+}
+
+/* ── INTERSECTION OBSERVER ───────────────────────────────── */
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      animateBars();
+      observer.disconnect();
+    }
+  });
+}, { threshold:0.2 });
+
+const target = document.getElementById('feat-list');
+if(target) observer.observe(target);
+
+/* ── LIGHTBOX ────────────────────────────────────────────── */
+function openLightbox(src){
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeLightbox(); });
+</script>
+</body>
+</html>

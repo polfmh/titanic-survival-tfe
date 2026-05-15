@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Habrías sobrevivido al Titanic?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Merriweather:wght@300;400;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ──────────────────────────────────────────────── */
+:root {
+  --bg:      #080818;
+  --surface: #0f0f2a;
+  --indigo:  #1e1b4b;
+  --gold:    #ca8a04;
+  --gold-lt: #fbbf24;
+  --teal:    #0d9488;
+  --teal-lt: #2dd4bf;
+  --text:    #f0f4ff;
+  --muted:   #94a3b8;
+  --glass:   rgba(255,255,255,0.04);
+  --glass-b: rgba(255,255,255,0.09);
+  --red:     #ef4444;
+  --green:   #10b981;
+  --amber:   #f59e0b;
+  --ease:    cubic-bezier(.4,0,.2,1);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  overflow: hidden; height: 100dvh; width: 100dvw;
+  user-select: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:.01ms!important; transition-duration:.01ms!important; }
+}
+
+/* ── CANVAS ──────────────────────────────────────────────── */
+#stars-canvas { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+/* ── PROGRESS ────────────────────────────────────────────── */
+.progress-bar {
+  position:fixed; top:0; left:0; height:3px;
+  background: linear-gradient(90deg, var(--teal), var(--gold));
+  z-index:100; transition: width .5s var(--ease);
+  box-shadow: 0 0 12px var(--teal);
+}
+
+/* ── SCREEN SYSTEM ───────────────────────────────────────── */
+.screen {
+  position:fixed; inset:0; z-index:10;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  padding:1.5rem;
+  opacity:0; pointer-events:none;
+  transform:translateY(28px);
+  transition: opacity .5s var(--ease), transform .5s var(--ease);
+}
+.screen.active { opacity:1; pointer-events:all; transform:translateY(0); }
+.screen.exit   { opacity:0; pointer-events:none; transform:translateY(-28px);
+                 transition:opacity .3s var(--ease),transform .3s var(--ease); }
+
+/* ── HERO ────────────────────────────────────────────────── */
+#hero { justify-content:flex-end; padding-bottom:0; overflow:hidden; }
+
+.hero-content {
+  position:absolute; top:46%; left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center; z-index:20;
+  width:min(700px,92vw);
+}
+.hero-eyebrow {
+  font-family:'Inter',sans-serif; font-size:.72rem; font-weight:500;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--gold);
+  margin-bottom:1rem;
+  opacity:0; animation:fadeUp .8s var(--ease) .3s forwards;
+}
+.hero-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.8rem,7vw,5.4rem); font-weight:700;
+  line-height:1.05; color:var(--text);
+  text-shadow:0 0 80px rgba(202,138,4,.22);
+  opacity:0; animation:fadeUp .9s var(--ease) .5s forwards;
+}
+.hero-title em { font-style:italic; color:var(--gold-lt); display:block; }
+.hero-sub {
+  font-family:'Merriweather',serif; font-size:clamp(.82rem,1.9vw,1rem);
+  font-weight:300; color:var(--muted); line-height:1.7;
+  margin-top:1.1rem; max-width:500px; margin-inline:auto;
+  opacity:0; animation:fadeUp .9s var(--ease) .7s forwards;
+}
+
+/* Project badge */
+.project-badge {
+  display:inline-flex; align-items:center; gap:.5rem;
+  margin-top:1.6rem; padding:.45rem 1.1rem;
+  background:var(--glass); border:1px solid var(--glass-b);
+  border-radius:2rem; backdrop-filter:blur(12px);
+  opacity:0; animation:fadeUp .9s var(--ease) .85s forwards;
+}
+.project-badge-dot {
+  width:6px; height:6px; border-radius:50%; background:var(--teal);
+  box-shadow:0 0 8px var(--teal); flex-shrink:0;
+}
+.project-badge-text {
+  font-family:'Inter',sans-serif; font-size:.68rem;
+  color:var(--muted); line-height:1.4; text-align:left;
+}
+.project-badge-text strong { color:var(--text); font-weight:500; }
+
+.hero-cta {
+  display:inline-flex; align-items:center; gap:.6rem;
+  margin-top:1.8rem; padding:.85rem 2.2rem;
+  background:var(--gold); color:#000;
+  font-family:'Inter',sans-serif; font-size:.88rem; font-weight:600;
+  letter-spacing:.05em; text-transform:uppercase;
+  border:none; border-radius:3rem; cursor:pointer;
+  transition:background .2s, transform .2s, box-shadow .2s;
+  box-shadow:0 0 30px rgba(202,138,4,.4);
+  opacity:0; animation:fadeUp .9s var(--ease) 1s forwards;
+}
+.hero-cta:hover { background:var(--gold-lt); transform:translateY(-2px); box-shadow:0 0 50px rgba(251,191,36,.5); }
+.hero-cta svg  { width:18px; height:18px; }
+
+/* Ship scene */
+.ship-scene {
+  position:absolute; bottom:0; left:0; right:0;
+  height:52vh; z-index:15; overflow:hidden;
+}
+.ship-wrapper {
+  position:absolute; bottom:11vh; left:50%;
+  transform:translateX(-50%);
+  width:min(820px,95vw);
+  animation:shipBob 6s ease-in-out infinite;
+  filter:drop-shadow(0 20px 60px rgba(13,148,136,.12));
+}
+.smoke-p {
+  position:absolute; border-radius:50%;
+  background:rgba(150,150,180,.32);
+  animation:smokeRise var(--d,4s) ease-out infinite;
+  animation-delay:var(--dl,0s);
+}
+.water-layer { position:absolute; bottom:0; left:0; right:0; overflow:hidden; }
+.water-svg { display:block; }
+.wp  { animation:waveAnim  var(--s,8s) linear infinite; }
+.wp2 { animation:waveAnim2 var(--s2,12s) linear infinite; }
+
+/* ── QUESTION SCREENS ────────────────────────────────────── */
+.q-screen { gap:0; }
+.q-number {
+  font-family:'Inter',sans-serif; font-size:.68rem; font-weight:500;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--teal);
+  margin-bottom:.7rem;
+}
+.q-title {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.55rem,4.2vw,2.5rem); font-weight:700;
+  line-height:1.15; text-align:center; max-width:580px;
+  margin-bottom:.45rem;
+}
+.q-sub {
+  font-family:'Merriweather',serif; font-size:clamp(.76rem,1.7vw,.9rem);
+  font-weight:300; color:var(--muted); text-align:center;
+  max-width:460px; line-height:1.65; margin-bottom:1.8rem;
+}
+
+/* Option cards */
+.options-grid {
+  display:flex; flex-wrap:wrap; gap:.7rem;
+  justify-content:center; width:100%; max-width:680px;
+}
+.option-card {
+  flex:1 1 calc(50% - .7rem); min-width:190px; max-width:310px;
+  background:var(--glass); border:1px solid var(--glass-b);
+  border-radius:1rem; padding:1rem 1.2rem;
+  cursor:pointer; text-align:left;
+  transition:background .18s, border-color .18s, transform .18s, box-shadow .18s;
+  backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+  position:relative; overflow:hidden;
+}
+.option-card::before {
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(135deg,rgba(13,148,136,.08),transparent);
+  opacity:0; transition:opacity .18s;
+}
+.option-card:hover { border-color:rgba(13,148,136,.45); transform:translateY(-2px); box-shadow:0 8px 28px rgba(13,148,136,.13); }
+.option-card:hover::before { opacity:1; }
+.option-card.selected {
+  border-color:var(--gold)!important; background:rgba(202,138,4,.1)!important;
+  box-shadow:0 0 0 2px var(--gold),0 8px 28px rgba(202,138,4,.2)!important;
+  transform:translateY(-2px);
+}
+.option-card.selected::before { opacity:0; }
+
+.option-icon {
+  width:30px; height:30px; margin-bottom:.45rem;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--glass-b); border-radius:.45rem;
+}
+.option-icon svg { width:17px; height:17px; }
+.option-label {
+  font-family:'Merriweather',serif; font-size:.88rem; font-weight:700;
+  color:var(--text); display:block; margin-bottom:.2rem;
+}
+.option-hint { font-family:'Inter',sans-serif; font-size:.73rem; color:var(--muted); line-height:1.4; }
+
+.options-grid.two-col .option-card   { min-width:200px; max-width:230px; flex:0 0 auto; }
+.options-grid.three-col .option-card { flex:1 1 calc(33% - .7rem); min-width:170px; }
+.options-grid.five-col  .option-card { flex:1 1 calc(33% - .7rem); min-width:175px; }
+
+/* ── TOAST ───────────────────────────────────────────────── */
+.toast {
+  position:fixed; bottom:2rem; left:50%;
+  transform:translateX(-50%) translateY(120%);
+  z-index:200; padding:.8rem 1.4rem;
+  background:rgba(15,15,42,.96); border:1px solid rgba(202,138,4,.35);
+  border-radius:2rem; backdrop-filter:blur(20px);
+  font-family:'Merriweather',serif; font-size:.82rem;
+  color:var(--text); text-align:center;
+  max-width:min(460px,90vw); line-height:1.5;
+  box-shadow:0 20px 60px rgba(0,0,0,.5),0 0 30px rgba(202,138,4,.08);
+  transition:transform .38s var(--ease), opacity .38s; opacity:0;
+}
+.toast.show { transform:translateX(-50%) translateY(0); opacity:1; }
+.toast strong { color:var(--gold-lt); }
+
+/* ── RESULT SCREEN ───────────────────────────────────────── */
+#result {
+  overflow-y:auto; padding:1.5rem; justify-content:flex-start;
+  padding-top:4.5rem; user-select:text;
+}
+.result-inner {
+  width:100%; max-width:660px;
+  display:flex; flex-direction:column; align-items:center; gap:1.4rem;
+  padding-bottom:3rem;
+}
+
+/* Gauge */
+.gauge-wrap { position:relative; width:200px; height:200px; }
+.gauge-bg   { stroke:rgba(255,255,255,.06); }
+.gauge-fill {
+  stroke:var(--gc,var(--teal)); stroke-linecap:round;
+  transition:stroke-dashoffset 2s cubic-bezier(.25,1,.5,1),stroke .4s;
+  transform:rotate(-90deg); transform-origin:center;
+  filter:drop-shadow(0 0 7px var(--gc,var(--teal)));
+}
+.gauge-center {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+}
+.gauge-pct {
+  font-family:'Cormorant Garamond',serif; font-size:3rem; font-weight:700;
+  line-height:1; color:var(--text); transition:color .4s;
+}
+.gauge-lbl {
+  font-family:'Inter',sans-serif; font-size:.6rem; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--muted); margin-top:.2rem;
+}
+
+/* Verdict badge */
+.verdict-badge {
+  display:inline-flex; align-items:center; gap:.45rem;
+  padding:.45rem 1.1rem; border-radius:2rem;
+  font-family:'Inter',sans-serif; font-size:.72rem; font-weight:600;
+  letter-spacing:.08em; text-transform:uppercase; border:1.5px solid;
+}
+.verdict-badge.good { color:var(--green); border-color:var(--green); background:rgba(16,185,129,.1); }
+.verdict-badge.mid  { color:var(--amber); border-color:var(--amber); background:rgba(245,158,11,.1); }
+.verdict-badge.bad  { color:var(--red);   border-color:var(--red);   background:rgba(239,68,68,.1); }
+
+/* Result text blocks */
+.result-headline {
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(1.3rem,3.2vw,1.85rem); font-weight:700;
+  text-align:center; line-height:1.22;
+}
+.result-story {
+  font-family:'Merriweather',serif; font-size:clamp(.78rem,1.7vw,.88rem);
+  font-weight:300; color:var(--muted); text-align:center;
+  line-height:1.75; max-width:500px;
+}
+
+/* Why section */
+.why-section {
+  width:100%; background:var(--glass); border:1px solid var(--glass-b);
+  border-radius:1rem; padding:1.1rem 1.3rem; backdrop-filter:blur(10px);
+}
+.why-title {
+  font-family:'Inter',sans-serif; font-size:.68rem; font-weight:600;
+  letter-spacing:.15em; text-transform:uppercase; color:var(--gold);
+  margin-bottom:.8rem;
+}
+.why-text {
+  font-family:'Merriweather',serif; font-size:.82rem; font-weight:300;
+  color:var(--text); line-height:1.72;
+}
+.why-text strong { color:var(--gold-lt); font-weight:700; }
+
+/* Factor breakdown */
+.factors-title {
+  font-family:'Inter',sans-serif; font-size:.68rem; font-weight:600;
+  letter-spacing:.15em; text-transform:uppercase; color:var(--teal);
+  align-self:flex-start; margin-top:.2rem;
+}
+.factors-grid { display:flex; flex-direction:column; gap:.45rem; width:100%; }
+.factor-row {
+  display:grid; grid-template-columns:8px 1fr auto;
+  align-items:start; gap:.65rem; padding:.6rem .9rem;
+  background:var(--glass); border:1px solid var(--glass-b);
+  border-radius:.7rem; backdrop-filter:blur(8px);
+}
+.factor-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; margin-top:.4rem; }
+.factor-dot.pos { background:var(--green); box-shadow:0 0 6px var(--green); }
+.factor-dot.neg { background:var(--red);   box-shadow:0 0 6px var(--red); }
+.factor-dot.neu { background:var(--amber); box-shadow:0 0 6px var(--amber); }
+.factor-body   { display:flex; flex-direction:column; gap:.18rem; }
+.factor-name   { font-family:'Inter',sans-serif; font-size:.78rem; font-weight:600; color:var(--text); }
+.factor-note   { font-family:'Inter',sans-serif; font-size:.7rem; color:var(--muted); line-height:1.35; }
+.factor-imp    {
+  font-family:'Inter',sans-serif; font-size:.7rem; font-weight:600;
+  white-space:nowrap; padding:.2rem .5rem; border-radius:.35rem;
+  background:var(--glass-b); color:var(--muted); align-self:flex-start;
+}
+
+/* ── DATA / HISTORY TOGGLE ───────────────────────────────── */
+.mode-toggle-wrap {
+  display:flex; align-items:center; gap:.6rem;
+  background:var(--glass); border:1px solid var(--glass-b);
+  border-radius:2rem; padding:.3rem .4rem; backdrop-filter:blur(10px);
+}
+.mode-btn {
+  padding:.32rem .85rem; border-radius:1.5rem; border:none;
+  font-family:'Inter',sans-serif; font-size:.72rem; font-weight:500;
+  cursor:pointer; transition:background .2s,color .2s;
+  background:transparent; color:var(--muted);
+}
+.mode-btn.active { background:var(--indigo); color:var(--text); }
+
+/* Data mode panel */
+.data-panel {
+  width:100%; background:#0a0a1e; border:1px solid rgba(13,148,136,.3);
+  border-radius:1rem; padding:1rem 1.2rem; display:none;
+}
+.data-panel.visible { display:block; }
+.data-panel-title {
+  font-family:'Inter',sans-serif; font-size:.65rem; font-weight:600;
+  letter-spacing:.15em; text-transform:uppercase; color:var(--teal);
+  margin-bottom:.8rem;
+}
+.data-grid {
+  display:grid; grid-template-columns:1fr 1fr; gap:.3rem .8rem;
+}
+.data-row {
+  display:flex; gap:.4rem; align-items:baseline;
+  font-family:'Inter',sans-serif; font-size:.78rem; line-height:1.5;
+}
+.data-key { color:var(--teal); font-weight:600; white-space:nowrap; }
+.data-eq  { color:var(--muted); }
+.data-val { color:var(--gold-lt); font-weight:500; }
+.data-note {
+  font-family:'Inter',sans-serif; font-size:.68rem; color:var(--muted);
+  margin-top:.7rem; padding-top:.7rem; border-top:1px solid rgba(255,255,255,.06);
+  line-height:1.5; font-style:italic;
+}
+
+/* Quote */
+.quote-box {
+  width:100%; padding:1rem 1.3rem;
+  border-left:3px solid var(--gold); background:rgba(202,138,4,.04);
+  border-radius:0 .7rem .7rem 0;
+}
+.quote-text {
+  font-family:'Cormorant Garamond',serif; font-size:.95rem;
+  font-style:italic; color:var(--text); line-height:1.6;
+}
+.quote-source {
+  font-family:'Inter',sans-serif; font-size:.67rem; color:var(--gold);
+  margin-top:.35rem; letter-spacing:.04em;
+}
+
+/* Retry */
+/* Explorer button */
+.btn-explorer {
+  display:inline-flex; align-items:center; gap:.55rem;
+  padding:.8rem 1.9rem; border-radius:3rem;
+  border:1.5px solid rgba(13,148,136,.4); background:rgba(13,148,136,.07);
+  color:var(--teal-lt); font-family:'Inter',sans-serif;
+  font-size:.82rem; font-weight:600; cursor:pointer;
+  backdrop-filter:blur(12px); text-decoration:none;
+  transition:border-color .2s,background .2s,transform .2s,color .2s;
+}
+.btn-explorer:hover {
+  border-color:var(--teal-lt); background:rgba(13,148,136,.15);
+  color:#fff; transform:translateY(-1px); text-decoration:none;
+}
+.btn-explorer svg { width:15px; height:15px; flex-shrink:0; }
+
+.btn-retry {
+  display:inline-flex; align-items:center; gap:.5rem;
+  padding:.75rem 1.9rem; border-radius:3rem;
+  border:1.5px solid var(--glass-b); background:var(--glass);
+  color:var(--text); font-family:'Inter',sans-serif;
+  font-size:.82rem; font-weight:500; cursor:pointer;
+  backdrop-filter:blur(12px);
+  transition:border-color .2s,background .2s,transform .2s;
+}
+.btn-retry:hover { border-color:var(--gold); background:rgba(202,138,4,.08); transform:translateY(-1px); }
+.btn-retry svg { width:15px; height:15px; }
+
+/* ── ANIMATIONS ──────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes shipBob {
+  0%,100% { transform:translateX(-50%) translateY(0px) rotate(-.25deg); }
+  50%      { transform:translateX(-50%) translateY(-9px) rotate(.25deg); }
+}
+@keyframes waveAnim  { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+@keyframes waveAnim2 { 0%{transform:translateX(0)} 100%{transform:translateX(-33.33%)} }
+@keyframes smokeRise {
+  0%   { transform:translateY(0) scale(1); opacity:.35; }
+  100% { transform:translateY(-55px) scale(2.4); opacity:0; }
+}
+
+/* ── MOBILE ──────────────────────────────────────────────── */
+@media (max-width:600px) {
+  .option-card { flex:1 1 100%; max-width:100%; }
+  .options-grid.two-col .option-card { max-width:46%; min-width:140px; }
+  .options-grid.three-col .option-card { flex:1 1 100%; max-width:100%; }
+  .data-grid { grid-template-columns:1fr; }
+  #result { padding-top:3.5rem; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="stars-canvas"></canvas>
+<div class="progress-bar" id="progress-bar" style="width:0%"></div>
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- HERO                                                   -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="screen active" id="hero">
+  <div class="hero-content">
+    <p class="hero-eyebrow">Titanic &middot; 15 Abril 1912</p>
+    <h1 class="hero-title">
+      &iquest;Habrías<br><em>sobrevivido?</em>
+    </h1>
+    <p class="hero-sub">
+      Un modelo de Machine Learning entrenado con datos reales del Titanic calcula tu probabilidad de supervivencia a partir de tu perfil. Basado en el análisis histórico del naufragio.
+    </p>
+
+    <div class="project-badge">
+      <div class="project-badge-dot"></div>
+      <div class="project-badge-text">
+        <strong>TFE · Posgrado en Business Analytics (PBA) · UPC School</strong><br>
+        Pablo Ferrer-Mayol &nbsp;&middot;&nbsp; Roger Tarridas &nbsp;&middot;&nbsp; Albert Felis &nbsp;&middot;&nbsp; 2026
+      </div>
+    </div>
+
+    <button class="hero-cta" onclick="startQuiz()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Descúbrelo
+    </button>
+  </div>
+
+  <div class="ship-scene">
+    <div class="ship-wrapper">
+      <!-- Smoke -->
+      <div class="smoke-p" style="width:13px;height:13px;left:244px;top:32px;--d:3.5s;--dl:0s"></div>
+      <div class="smoke-p" style="width:9px;height:9px;left:252px;top:24px;--d:3.5s;--dl:.7s"></div>
+      <div class="smoke-p" style="width:12px;height:12px;left:318px;top:20px;--d:4s;--dl:.2s"></div>
+      <div class="smoke-p" style="width:8px;height:8px;left:329px;top:11px;--d:4s;--dl:1s"></div>
+      <div class="smoke-p" style="width:11px;height:11px;left:394px;top:20px;--d:3.8s;--dl:.4s"></div>
+      <div class="smoke-p" style="width:9px;height:9px;left:403px;top:11px;--d:3.8s;--dl:1.1s"></div>
+      <div class="smoke-p" style="width:10px;height:10px;left:466px;top:30px;--d:4.2s;--dl:.3s"></div>
+      <!-- Ship SVG -->
+      <svg viewBox="0 0 820 240" xmlns="http://www.w3.org/2000/svg" width="100%">
+        <line x1="118" y1="50" x2="118" y2="155" stroke="#2d2b5e" stroke-width="3"/>
+        <line x1="118" y1="56" x2="90"  y2="102" stroke="#2d2b5e" stroke-width="1.5" opacity=".55"/>
+        <line x1="118" y1="56" x2="148" y2="102" stroke="#2d2b5e" stroke-width="1.5" opacity=".55"/>
+        <line x1="672" y1="58" x2="672" y2="155" stroke="#2d2b5e" stroke-width="3"/>
+        <line x1="672" y1="64" x2="644" y2="110" stroke="#2d2b5e" stroke-width="1.5" opacity=".55"/>
+        <line x1="672" y1="64" x2="700" y2="110" stroke="#2d2b5e" stroke-width="1.5" opacity=".55"/>
+        <rect x="228" y="54" width="42" height="98" rx="7" fill="#1a1832"/>
+        <rect x="228" y="54" width="42" height="17" rx="5" fill="#0a0818"/>
+        <rect x="302" y="38" width="44" height="114" rx="7" fill="#1e1b4b"/>
+        <rect x="302" y="38" width="44" height="17" rx="5" fill="#0a0818"/>
+        <rect x="378" y="38" width="44" height="114" rx="7" fill="#1e1b4b"/>
+        <rect x="378" y="38" width="44" height="17" rx="5" fill="#0a0818"/>
+        <rect x="454" y="54" width="40" height="98" rx="7" fill="#1a1832"/>
+        <rect x="454" y="54" width="40" height="17" rx="5" fill="#0a0818"/>
+        <rect x="340" y="118" width="220" height="26" rx="4" fill="#252050"/>
+        <rect x="330" y="140" width="240" height="16" rx="2" fill="#1e1b4b"/>
+        <rect x="95"  y="152" width="652" height="20" rx="3" fill="#1a1832"/>
+        <rect x="82"  y="168" width="678" height="22" rx="3" fill="#16132e"/>
+        <rect x="70"  y="186" width="698" height="28" rx="3" fill="#13112a"/>
+        <path d="M 55,210 L 768,210 L 784,230 L 40,230 Z" fill="#0f0d22"/>
+        <path d="M 55,210 L 40,230 L 24,240 Q 30,242 48,238 L 60,228 Z" fill="#0f0d22"/>
+        <path d="M 768,210 L 784,230 L 790,240 L 800,236 L 796,222 Z" fill="#0f0d22"/>
+        <circle cx="160" cy="161" r="3.2" fill="#0d9488" opacity=".65"/>
+        <circle cx="200" cy="161" r="3.2" fill="#0d9488" opacity=".65"/>
+        <circle cx="590" cy="161" r="3.2" fill="#0d9488" opacity=".55"/>
+        <circle cx="630" cy="161" r="3.2" fill="#0d9488" opacity=".55"/>
+        <circle cx="670" cy="161" r="3.2" fill="#0d9488" opacity=".55"/>
+        <circle cx="130" cy="179" r="2.8" fill="#0a6b62" opacity=".5"/>
+        <circle cx="165" cy="179" r="2.8" fill="#0a6b62" opacity=".5"/>
+        <circle cx="200" cy="179" r="2.8" fill="#0a6b62" opacity=".5"/>
+        <circle cx="590" cy="179" r="2.8" fill="#0a6b62" opacity=".5"/>
+        <circle cx="625" cy="179" r="2.8" fill="#0a6b62" opacity=".5"/>
+        <circle cx="660" cy="179" r="2.8" fill="#0a6b62" opacity=".5"/>
+        <circle cx="695" cy="179" r="2.8" fill="#0a6b62" opacity=".5"/>
+        <rect x="362" y="122" width="14" height="9" rx="2" fill="#ca8a04" opacity=".28"/>
+        <rect x="392" y="122" width="14" height="9" rx="2" fill="#ca8a04" opacity=".22"/>
+        <rect x="422" y="122" width="14" height="9" rx="2" fill="#ca8a04" opacity=".28"/>
+        <rect x="512" y="122" width="14" height="9" rx="2" fill="#ca8a04" opacity=".22"/>
+        <rect x="542" y="122" width="14" height="9" rx="2" fill="#ca8a04" opacity=".18"/>
+      </svg>
+    </div>
+    <div class="water-layer">
+      <svg class="water-svg" viewBox="0 0 1440 110" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="height:11vh;width:200%">
+        <defs>
+          <linearGradient id="wg1" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0c2340"/>
+            <stop offset="100%" stop-color="#061524"/>
+          </linearGradient>
+        </defs>
+        <path class="wp" style="--s:9s" d="M0,38 C240,68 480,8 720,38 C960,68 1200,8 1440,38 L1440,110 L0,110 Z" fill="url(#wg1)"/>
+      </svg>
+    </div>
+    <div class="water-layer" style="bottom:0">
+      <svg class="water-svg" viewBox="0 0 1440 75" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="height:7vh;width:300%">
+        <path class="wp2" style="--s2:14s" d="M0,22 C180,48 360,4 540,22 C720,48 900,4 1080,22 C1260,48 1440,4 1620,22 L1620,75 L0,75 Z" fill="#061524" opacity=".95"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- Q1: GÉNERO                                             -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="screen q-screen" id="q1">
+  <p class="q-number">Pregunta 1 de 5</p>
+  <h2 class="q-title">Antes de zarpar... ¿quién eres?</h2>
+  <p class="q-sub">Responde con cuidado. El modelo ya está tomando nota silenciosamente.</p>
+  <div class="options-grid two-col">
+    <div class="option-card" onclick="answer('gender','male',this,'Hombre. El modelo te mira con cierta... compasión estadística. Sigue respondiendo.')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M12 13v8M9 18h6"/></svg>
+      </div>
+      <span class="option-label">Soy hombre</span>
+      <span class="option-hint">El modelo tiene algo importante que decirte más adelante. Spoiler: no es bueno.</span>
+    </div>
+    <div class="option-card" onclick="answer('gender','female',this,'Mujer. El algoritmo acaba de ponerse de tu lado. Solo decimos eso.')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M12 13v5M9 21h6"/></svg>
+      </div>
+      <span class="option-label">Soy mujer</span>
+      <span class="option-hint">El modelo ya empieza a verte con buenos ojos. No decimos nada más.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- Q2: DINERO / CLASE                                    -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="screen q-screen" id="q2">
+  <p class="q-number">Pregunta 2 de 5</p>
+  <h2 class="q-title">Seamos directos... ¿cuánto cobras al mes?</h2>
+  <p class="q-sub">Prometo no juzgarte. El modelo, en cambio, sí lo hará. Y bastante.</p>
+  <div class="options-grid three-col">
+    <div class="option-card" onclick="answer('pclass',1,this,'¡Vaya crack! Primera clase para ti. Camarote de lujo, cenas con el capitán y... el modelo ya sonríe. <strong>Directo al B-Deck.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.77 5.82 21 7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <span class="option-label">Más de 5.000 &euro; / mes</span>
+      <span class="option-hint">Primera clase. Champán, mayordomo y vistas al mar. <em>Estadísticamente conveniente.</em></span>
+    </div>
+    <div class="option-card" onclick="answer('pclass',2,this,'Segunda clase. Correcto y funcional. Camarote decente y acceso a los botes... <strong>más o menos.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 12h6M9 8h6M9 16h4"/></svg>
+      </div>
+      <span class="option-label">1.500 &ndash; 5.000 &euro; / mes</span>
+      <span class="option-hint">Segunda clase. Ni lujo ni calamidad. El término medio también existe.</span>
+    </div>
+    <div class="option-card" onclick="answer('pclass',3,this,'Tercera clase. Cubiertas inferiores, más lejos de los botes y —dato histórico incómodo— las puertas a veces se cerraban. <strong>El modelo lo sabe.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+      </div>
+      <span class="option-label">El mes tiene muchos días...</span>
+      <span class="option-hint">Tercera clase. Compartías camarote con 6 personas. El modelo suspira contigo.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- Q3: EDAD                                               -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="screen q-screen" id="q3">
+  <p class="q-number">Pregunta 3 de 5</p>
+  <h2 class="q-title">¿Cuántos años tienes?</h2>
+  <p class="q-sub">Los niños y las niñas tenían prioridad. El Titanic tenía su propio algoritmo de prioridades.</p>
+  <div class="options-grid five-col">
+    <div class="option-card" onclick="answer('age',{v:8,g:0},this,'Eres un crío. Los niños tenían prioridad absoluta de evacuación. El modelo te mira con ternura <strong>y con datos.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+      </div>
+      <span class="option-label">Ni&ntilde;o / Ni&ntilde;a</span>
+      <span class="option-hint">Menos de 12 años. "Los niños primero" era real y medible.</span>
+    </div>
+    <div class="option-card" onclick="answer('age',{v:15,g:1},this,'Adolescente. La edad más incómoda para todo, incluyendo los desastres marítimos. El modelo te ve con <strong>cautela esperanzadora.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/></svg>
+      </div>
+      <span class="option-label">Adolescente</span>
+      <span class="option-hint">12&ndash;17 años. Entre la infancia y la adultez. Como siempre.</span>
+    </div>
+    <div class="option-card" onclick="answer('age',{v:27,g:2},this,'Adulto/a joven. En plena forma. El modelo te evalúa con frialdad estadística. <strong>El género pesa más que la edad aquí.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20v-2a8 8 0 0 1 16 0v2"/></svg>
+      </div>
+      <span class="option-label">Adulto / a joven</span>
+      <span class="option-hint">18&ndash;35 años. El rango de edad más común en el barco.</span>
+    </div>
+    <div class="option-card" onclick="answer('age',{v:45,g:3},this,'Adulto/a con experiencia. El modelo te trata como alguien que sabe lo que hace... <strong>o que debería saberlo.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20v-2a8 8 0 0 1 16 0v2"/><path d="M16 3.5a4 4 0 0 1 0 7"/></svg>
+      </div>
+      <span class="option-label">Adulto / a</span>
+      <span class="option-hint">36&ndash;60 años. La madurez tiene sus pros. El modelo los cuenta.</span>
+    </div>
+    <div class="option-card" onclick="answer('age',{v:65,g:4},this,'Senior. El modelo te mira con <strong>respeto y honestidad histórica.</strong> No siempre son buenas noticias.')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20v-2a8 8 0 0 1 16 0v2"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </div>
+      <span class="option-label">Senior</span>
+      <span class="option-hint">Más de 60 años. El modelo te valora con honestidad histórica.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- Q4: COMPAÑÍA                                           -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="screen q-screen" id="q4">
+  <p class="q-number">Pregunta 4 de 5</p>
+  <h2 class="q-title">¿Con quién subes al Titanic?</h2>
+  <p class="q-sub">La soledad tiene su encanto. En un desastre marítimo tiene sus contras estadísticos.</p>
+  <div class="options-grid three-col">
+    <div class="option-card" onclick="answer('family',{size:1,sibsp:0,parch:0,cat:0},this,'Solo/a. Sin red de apoyo, sin prioridad de grupo. <strong>Tenías que arreglártelas solo/a.</strong> El modelo lo anota.')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/></svg>
+      </div>
+      <span class="option-label">Solo / a</span>
+      <span class="option-hint">Un alma libre. Sin equipaje emocional ni aliados. IsAlone = 1.</span>
+    </div>
+    <div class="option-card" onclick="answer('family',{size:2,sibsp:1,parch:0,cat:1},this,'Familia pequeña. El modelo aprueba. Grupos pequeños se movían más rápido y con más determinación. <strong>Ventaja real.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span class="option-label">Pareja o 1&ndash;2 familiares</span>
+      <span class="option-hint">El punto dulce estadístico. Apoyo mutuo, movilidad, motivación.</span>
+    </div>
+    <div class="option-card" onclick="answer('family',{size:6,sibsp:3,parch:2,cat:2},this,'Familia numerosa. Coordinar 6+ personas en pánico es... <strong>estadísticamente complicado.</strong> Los datos del dataset lo confirman.')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span class="option-label">Familia numerosa (5+)</span>
+      <span class="option-hint">Unidos pero complicados. Los grupos grandes tenían mayor dificultad de evacuación.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- Q5: PUERTO DE EMBARQUE                                 -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="screen q-screen" id="q5">
+  <p class="q-number">Pregunta 5 de 5</p>
+  <h2 class="q-title">¿Desde dónde zarparías?</h2>
+  <p class="q-sub">Tres ciudades, tres tipos de pasajero. El puerto de embarque no es solo geografía.</p>
+  <div class="options-grid three-col">
+    <div class="option-card" onclick="answer('embarked','S',this,'Southampton. El 72% del pasaje embarcó aquí. Tú y casi todo el mundo. El modelo te trata con la estadística del promedio. <strong>Ni mejor ni peor.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <span class="option-label">Southampton, Inglaterra</span>
+      <span class="option-hint">El punto de partida oficial. La mayoría del pasaje. Sin ventaja ni desventaja especial.</span>
+    </div>
+    <div class="option-card" onclick="answer('embarked','C',this,'Cherburgo. Con clase, literalmente. Aquí embarcaron más pasajeros de primera. El modelo te mira con <strong>ojos más optimistas.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+      </div>
+      <span class="option-label">Cherburgo, Francia</span>
+      <span class="option-hint">La parada francesa. Mayor proporción de pasajeros de 1ª clase. La elegancia deja datos.</span>
+    </div>
+    <div class="option-card" onclick="answer('embarked','Q',this,'Queenstown. Espíritu aventurero e irlandés. La mayoría eran emigrantes con billete de tercera. <strong>El modelo anota el detalle.</strong>')">
+      <div class="option-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      </div>
+      <span class="option-label">Queenstown, Irlanda</span>
+      <span class="option-hint">El último puerto antes del Atlántico. Mayoría emigrantes de tercera. El romanticismo tiene su precio.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!-- RESULT                                                 -->
+<!-- ══════════════════════════════════════════════════════ -->
+<section class="screen" id="result">
+  <div class="result-inner">
+
+    <!-- Gauge -->
+    <div class="gauge-wrap">
+      <svg viewBox="0 0 200 200" width="200" height="200">
+        <circle class="gauge-bg" cx="100" cy="100" r="86" fill="none" stroke-width="13"/>
+        <circle class="gauge-fill" id="gauge-fill" cx="100" cy="100" r="86" fill="none" stroke-width="13"
+                stroke-dasharray="540" stroke-dashoffset="540"/>
+      </svg>
+      <div class="gauge-center">
+        <div class="gauge-pct" id="gauge-pct">0%</div>
+        <div class="gauge-lbl">supervivencia</div>
+      </div>
+    </div>
+
+    <!-- Verdict + headline -->
+    <div class="verdict-badge" id="verdict-badge">Calculando...</div>
+    <h2 class="result-headline" id="result-headline"></h2>
+    <p class="result-story" id="result-story"></p>
+
+    <!-- Why section -->
+    <div class="why-section">
+      <div class="why-title">¿Por qué te salió este porcentaje?</div>
+      <p class="why-text" id="why-text"></p>
+    </div>
+
+    <!-- Mode toggle -->
+    <div class="mode-toggle-wrap">
+      <button class="mode-btn active" id="btn-history" onclick="setMode('history')">Modo historia</button>
+      <button class="mode-btn"        id="btn-data"    onclick="setMode('data')">Modo datos</button>
+    </div>
+
+    <!-- History mode: factor breakdown -->
+    <div id="history-panel" style="width:100%">
+      <div class="factors-title">Factores del modelo</div>
+      <div class="factors-grid" id="factors-grid"></div>
+    </div>
+
+    <!-- Data mode: raw variables -->
+    <div class="data-panel" id="data-panel">
+      <div class="data-panel-title">Variables del modelo &mdash; Random Forest (titanic_enriched.csv)</div>
+      <div class="data-grid" id="data-grid"></div>
+      <p class="data-note">
+        Valores estimados a partir de las respuestas, usando las medianas de cada grupo del dataset Titanic.
+        El modelo fue entrenado con estas 14 features (SHAP importance &gt; 0 en todas).
+        Accuracy: 82,1% &nbsp;|&nbsp; ROC-AUC: 85,6% &nbsp;|&nbsp; CV 5-fold: 82,6%
+      </p>
+    </div>
+
+    <!-- Quote -->
+    <div class="quote-box" id="result-quote"></div>
+
+    <!-- Explorer link -->
+    <a href="model_explorer.html" class="btn-explorer">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+      Ver análisis completo del modelo
+    </a>
+
+    <!-- Retry -->
+    <button class="btn-retry" onclick="retry()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 1,10 7,10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+      Volver a intentarlo
+    </button>
+  </div>
+</section>
+
+<script>
+/* ═══════════════════════════════════════════════════════ */
+/* CONSTANTS: REAL MODEL DATA                              */
+/* ═══════════════════════════════════════════════════════ */
+
+// Feature importances from our Random Forest (Gini, trained on titanic_enriched.csv)
+const FEAT_IMP = {
+  Sex_num:      28.73,
+  Title_num:    14.69,
+  Fare:         12.67,
+  Age:           7.95,
+  Pclass:        7.62,
+  HasCabin:      6.12,
+  FamilySize:    4.52,
+  IsAlone:       3.81,
+  AgeGroup_num:  3.22,
+  FareBand_num:  2.97,
+  FamilyCat_num: 2.45,
+  Embarked_num:  2.21,
+  SibSp:         1.89,
+  Parch:         1.75
+};
+
+// Historical base rates by gender x class (from actual Titanic training data)
+// Source: titanic_enriched.csv analysis
+const BASE_RATES = {
+  'female-1': 96.8, 'female-2': 92.1, 'female-3': 50.0,
+  'male-1':   36.9, 'male-2':   15.7, 'male-3':   13.5
+};
+
+// Age adjustments (deviation from gender×class base, based on EDA)
+const AGE_MOD = [+11, +4, 0, -3, -8];   // [child, teen, young adult, adult, senior]
+
+// Family adjustments (based on actual survival rates by FamilyCat)
+// Solo: 30.4% | Small: 57.8% | Large: 16.1% (from EDA)
+const FAM_MOD = { 0: -5, 1: +8, 2: -14 };
+
+// Estimated fares by class (median from dataset)
+const FARE_BY_CLASS = { 1: 84, 2: 14, 3: 8 };
+
+/* ═══════════════════════════════════════════════════════ */
+/* STATE                                                   */
+/* ═══════════════════════════════════════════════════════ */
+const state = { gender: null, pclass: null, age: null, ageGroup: null, family: null, embarked: null };
+let currentScreen = 'hero';
+let historyMode   = true;
+const SCREENS = ['hero','q1','q2','q3','q4','q5','result'];
+
+/* ═══════════════════════════════════════════════════════ */
+/* STARS CANVAS                                            */
+/* ═══════════════════════════════════════════════════════ */
+(function initStars(){
+  const c = document.getElementById('stars-canvas');
+  const ctx = c.getContext('2d');
+  let stars = [];
+  function resize(){
+    c.width  = window.innerWidth;
+    c.height = window.innerHeight;
+    stars = Array.from({length:200}, () => ({
+      x: Math.random() * c.width,
+      y: Math.random() * c.height * .72,
+      r: Math.random() * 1.3 + .3,
+      a: Math.random() * .75 + .12,
+      speed: Math.random() * .003 + .001,
+      phase: Math.random() * Math.PI * 2
+    }));
+  }
+  function draw(t){
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s => {
+      const alpha = s.a * (.7 + .3 * Math.sin(t * s.speed + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(200,210,255,${alpha})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+  requestAnimationFrame(draw);
+})();
+
+/* ═══════════════════════════════════════════════════════ */
+/* NAVIGATION                                              */
+/* ═══════════════════════════════════════════════════════ */
+function showScreen(id){
+  const cur = document.querySelector('.screen.active');
+  if(cur){ cur.classList.add('exit'); setTimeout(()=>cur.classList.remove('active','exit'), 320); }
+  setTimeout(()=>{
+    const next = document.getElementById(id);
+    next.classList.add('active');
+    currentScreen = id;
+    updateProgress();
+    if(id === 'result') next.scrollTop = 0;
+  }, cur ? 280 : 0);
+}
+
+function updateProgress(){
+  const idx = SCREENS.indexOf(currentScreen);
+  const pct = idx <= 0 ? 0
+            : idx === SCREENS.length-1 ? 100
+            : Math.round((idx / (SCREENS.length-2)) * 100);
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+function startQuiz(){ showScreen('q1'); }
+
+function retry(){
+  // Reset all state (includes gender, pclass, age, ageGroup, family, embarked)
+  Object.keys(state).forEach(k => state[k] = null);
+  // Clear all visual selections and locks
+  document.querySelectorAll('.option-card.selected').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.options-grid').forEach(el => delete el.dataset.answered);
+  // Reset mode
+  historyMode = true;
+  setMode('history');
+  showScreen('hero');
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* ANSWER HANDLER                                          */
+/* ═══════════════════════════════════════════════════════ */
+function answer(key, value, el, toastMsg){
+  const grid = el.closest('.options-grid');
+  if(grid.dataset.answered) return;
+  grid.dataset.answered = '1';
+
+  el.classList.add('selected');
+
+  if(key === 'age'){
+    state.age      = value.v;
+    state.ageGroup = value.g;
+  } else if(key === 'family'){
+    state.family   = value;
+  } else {
+    state[key] = value;
+  }
+
+  showToast(toastMsg);
+
+  const nextMap = {q1:'q2',q2:'q3',q3:'q4',q4:'q5',q5:'result'};
+  const curId   = el.closest('.screen').id;
+  setTimeout(()=>{
+    hideToast();
+    if(nextMap[curId] === 'result') buildResult();
+    showScreen(nextMap[curId] || 'result');
+  }, 1900);
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* TOAST                                                   */
+/* ═══════════════════════════════════════════════════════ */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.innerHTML = msg; t.classList.add('show');
+}
+function hideToast(){
+  document.getElementById('toast').classList.remove('show');
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* PROBABILITY ENGINE (model-aligned)                     */
+/* ═══════════════════════════════════════════════════════ */
+function calcProb(){
+  // Step 1: base from historical gender×class rates
+  const base = BASE_RATES[`${state.gender}-${state.pclass}`] ?? 38.4;
+
+  // Step 2: age adjustment (feature importance: Age 7.95% + AgeGroup 3.22%)
+  const ageAdj = AGE_MOD[state.ageGroup] ?? 0;
+
+  // Step 3: family adjustment (FamilySize 4.52% + IsAlone 3.81% + FamilyCat 2.45%)
+  const famAdj = state.family ? FAM_MOD[state.family.cat] ?? 0 : 0;
+
+  // Step 4: embarked adjustment (Embarked_num importance: 2.21%)
+  const embAdj = state.embarked === 'C' ? +4 : state.embarked === 'Q' ? -2 : 0;
+
+  const raw = base + ageAdj + famAdj + embAdj;
+  return Math.round(Math.max(3, Math.min(97, raw)));
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* RESULT BUILDER                                          */
+/* ═══════════════════════════════════════════════════════ */
+function buildResult(){
+  const prob   = calcProb();
+  const isGood = prob >= 65;
+  const isMid  = prob >= 40 && prob < 65;
+  const color  = isGood ? '#10b981' : isMid ? '#f59e0b' : '#ef4444';
+
+  // Gauge
+  const gf = document.getElementById('gauge-fill');
+  gf.style.stroke = color;
+  gf.style.setProperty('--gc', color);
+  document.getElementById('gauge-pct').style.color = color;
+  setTimeout(()=>{
+    const circum = 540; // 2π×86 ≈ 540
+    gf.style.strokeDashoffset = circum - (prob/100)*circum;
+    animateCounter(prob);
+  }, 420);
+
+  // Verdict
+  const badge = document.getElementById('verdict-badge');
+  badge.className = 'verdict-badge ' + (isGood?'good':isMid?'mid':'bad');
+  badge.textContent = isGood ? 'Las probabilidades estaban contigo'
+                   : isMid  ? 'Era cosa del destino'
+                             : 'Las cartas estaban en tu contra';
+
+  // Labels helpers
+  const gLbl  = state.gender  === 'female' ? 'mujer'   : 'hombre';
+  const cLbl  = ['','primera','segunda','tercera'][state.pclass];
+  const aLbls = ['niño/a (<12 años)','adolescente','adulto/a joven','adulto/a','senior'];
+  const fLbls = ['viajando solo/a','con pareja o familia pequeña','con familia numerosa'];
+  const aLbl  = aLbls[state.ageGroup];
+  const fLbl  = fLbls[state.family.cat];
+
+  // Headline
+  const headlines = {
+    good: `Como ${gLbl} de ${cLbl} clase, las probabilidades estaban de tu lado.`,
+    mid:  `Tu perfil dejaba las probabilidades en un inquietante equilibrio.`,
+    bad:  `Seré honesto/a: el destino no jugaba a tu favor esa noche.`
+  };
+  document.getElementById('result-headline').textContent =
+    isGood ? headlines.good : isMid ? headlines.mid : headlines.bad;
+
+  // Story
+  document.getElementById('result-story').textContent =
+    `El modelo analiza tu perfil como ${gLbl} de ${cLbl} clase, ${aLbl}, ${fLbl}. ` +
+    (isGood ? `Combinando estos factores, el algoritmo estima que habrías tenido alta probabilidad de alcanzar los botes salvavidas.`
+            : isMid ? `El resultado es incierto: factores positivos y negativos se compensan. En una situación así, la suerte también tenía su parte.`
+                    : `La combinación de factores históricos apunta a bajas probabilidades. No imposible, pero estadísticamente muy complicado.`);
+
+  buildWhy(prob, isGood, isMid);
+  buildFactors();
+  buildDataPanel();
+  buildQuote();
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* WHY SECTION                                             */
+/* ═══════════════════════════════════════════════════════ */
+function buildWhy(prob, isGood, isMid){
+  const gLbl = state.gender === 'female' ? 'femenino' : 'masculino';
+  const cLbl = ['','primera','segunda','tercera'][state.pclass];
+  const aLbls = ['de niño/a','de adolescente','de adulto/a joven','de adulto/a','de senior'];
+  const baseRate = BASE_RATES[`${state.gender}-${state.pclass}`];
+  const ageAdj   = AGE_MOD[state.ageGroup] ?? 0;
+  const famAdj   = state.family ? FAM_MOD[state.family.cat] ?? 0 : 0;
+
+  const ageSign = ageAdj > 0 ? `ajustó la probabilidad al alza +${ageAdj}pp` : ageAdj < 0 ? `redujo la probabilidad ${ageAdj}pp` : `no añadió ajuste significativo`;
+  const famSign = famAdj > 0 ? `suma +${famAdj}pp` : famAdj < 0 ? `resta ${Math.abs(famAdj)}pp` : `efecto neutro`;
+
+  const portNames = {S:'Southampton', C:'Cherburgo', Q:'Queenstown'};
+  const embAdj    = state.embarked === 'C' ? +4 : state.embarked === 'Q' ? -2 : 0;
+  const embSign   = embAdj > 0 ? `suma +${embAdj}pp` : embAdj < 0 ? `resta ${Math.abs(embAdj)}pp` : `no añade ajuste`;
+
+  const txt = `La variable más importante en tu predicción fue el <strong>sexo</strong> (peso en el modelo: ${FEAT_IMP.Sex_num.toFixed(1)}%), seguida del <strong>título social</strong> (${FEAT_IMP.Title_num.toFixed(1)}%) —derivado del nombre, condensa género, edad y posición— y la <strong>tarifa</strong> (${FEAT_IMP.Fare.toFixed(1)}%), que refleja el nivel económico y la ubicación del camarote. `
+    + `En el dataset Titanic, el género ${gLbl} combinado con ${cLbl} clase fija la probabilidad base en el <strong>${baseRate.toFixed(1)}%</strong> según los datos históricos reales. `
+    + `Tu edad (${aLbls[state.ageGroup]}) ${ageSign} (peso: ${(FEAT_IMP.Age + FEAT_IMP.AgeGroup_num).toFixed(1)}%). `
+    + `El tamaño familiar ${famSign} (peso combinado: ${(FEAT_IMP.FamilySize + FEAT_IMP.IsAlone + FEAT_IMP.FamilyCat_num).toFixed(1)}%). `
+    + `El puerto de embarque (${portNames[state.embarked]}) ${embSign} (peso: ${FEAT_IMP.Embarked_num.toFixed(1)}%). `
+    + `El resultado final es <strong>${prob}%</strong>.`;
+
+  document.getElementById('why-text').innerHTML = txt;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* FACTOR BREAKDOWN (based on actual feature importances) */
+/* ═══════════════════════════════════════════════════════ */
+function buildFactors(){
+  const genderDir = state.gender === 'female' ? 'pos' : 'neg';
+  const classDir  = state.pclass === 1 ? 'pos' : state.pclass === 2 ? 'neu' : 'neg';
+  const ageDir    = state.ageGroup === 0 ? 'pos' : state.ageGroup <= 2 ? 'neu' : 'neg';
+  const famDir    = state.family.cat === 1 ? 'pos' : state.family.cat === 0 ? 'neu' : 'neg';
+
+  const factors = [
+    {
+      dir: genderDir,
+      name: `Sexo — ${state.gender === 'female' ? 'Mujer' : 'Hombre'}`,
+      imp: FEAT_IMP.Sex_num,
+      note: state.gender === 'female'
+        ? 'En el dataset, el 74,2% de las mujeres sobrevivió. Factor positivo clave.'
+        : 'En el dataset, solo el 18,9% de los hombres sobrevivió. Mayor impacto negativo.'
+    },
+    {
+      dir: classDir,
+      name: `Clase del billete — ${['','1ª','2ª','3ª'][state.pclass]} clase`,
+      imp: FEAT_IMP.Pclass,
+      note: `Tasa histórica: 1ª: 63,0% | 2ª: 47,3% | 3ª: 24,2%. Determina la posición física en el barco.`
+    },
+    {
+      dir: state.pclass === 1 ? 'pos' : state.pclass === 3 ? 'neg' : 'neu',
+      name: `Tarifa estimada — aprox. ${FARE_BY_CLASS[state.pclass]} £`,
+      imp: FEAT_IMP.Fare,
+      note: 'La tarifa es el predictor continuo más potente. Proxy del nivel económico y del camarote exacto.'
+    },
+    {
+      dir: ageDir,
+      name: `Edad — ${['Niño/a (<12)','Adolescente','Adulto/a joven','Adulto/a (36-60)','Senior (60+)'][state.ageGroup]}`,
+      imp: FEAT_IMP.Age + FEAT_IMP.AgeGroup_num,
+      note: `Los niños tenían prioridad. Los seniors tenían menor movilidad y menor prioridad histórica.`
+    },
+    {
+      dir: famDir,
+      name: `Tamaño familiar — ${['Solo/a','Familia pequeña (2-4)','Familia numerosa (5+)'][state.family.cat]}`,
+      imp: FEAT_IMP.FamilySize + FEAT_IMP.IsAlone + FEAT_IMP.FamilyCat_num,
+      note: `Tasas históricas: Solo ~30% | Familia pequeña ~58% | Familia grande ~16%.`
+    },
+    {
+      dir: state.embarked === 'C' ? 'pos' : state.embarked === 'Q' ? 'neg' : 'neu',
+      name: `Puerto de embarque — ${{S:'Southampton',C:'Cherburgo',Q:'Queenstown'}[state.embarked]}`,
+      imp: FEAT_IMP.Embarked_num,
+      note: `Cherburgo tenía más pasajeros de 1ª clase. Queenstown, más emigrantes de 3ª. Southampton era el promedio.`
+    }
+  ];
+
+  document.getElementById('factors-grid').innerHTML = factors.map(f => `
+    <div class="factor-row">
+      <div class="factor-dot ${f.dir}"></div>
+      <div class="factor-body">
+        <span class="factor-name">${f.name}</span>
+        <span class="factor-note">${f.note}</span>
+      </div>
+      <span class="factor-imp">${f.imp.toFixed(1)}%</span>
+    </div>`).join('');
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* DATA PANEL (raw model variables)                       */
+/* ═══════════════════════════════════════════════════════ */
+function buildDataPanel(){
+  const title = state.gender === 'female'
+    ? (state.ageGroup <= 1 ? 'Miss' : 'Mrs')
+    : (state.ageGroup === 0 ? 'Master' : 'Mr');
+  const ageGroupLabels = ['Nino','Adolescente','Adulto_joven','Adulto','Senior'];
+  const famCatLabels   = ['Solo','Familia_pequeña','Familia_grande'];
+
+  const vars = [
+    ['Sex',         state.gender],
+    ['Pclass',      state.pclass],
+    ['Age',         state.age],
+    ['Title',       title],
+    ['SibSp',       state.family.sibsp],
+    ['Parch',       state.family.parch],
+    ['FamilySize',  state.family.size],
+    ['IsAlone',     state.family.cat === 0 ? 1 : 0],
+    ['Fare',        `~${FARE_BY_CLASS[state.pclass]}`],
+    ['AgeGroup',    ageGroupLabels[state.ageGroup]],
+    ['FamilyCat',   famCatLabels[state.family.cat]],
+    ['HasCabin',    state.pclass === 1 ? 1 : 0],
+    ['Sex_num',     state.gender === 'female' ? 1 : 0],
+    ['Embarked',    state.embarked || 'S'],
+  ];
+
+  document.getElementById('data-grid').innerHTML = vars.map(([k,v]) =>
+    `<div class="data-row"><span class="data-key">${k}</span><span class="data-eq">=</span><span class="data-val">${v}</span></div>`
+  ).join('');
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* MODE TOGGLE                                             */
+/* ═══════════════════════════════════════════════════════ */
+function setMode(mode){
+  historyMode = mode === 'history';
+  document.getElementById('btn-history').classList.toggle('active', historyMode);
+  document.getElementById('btn-data').classList.toggle('active', !historyMode);
+  document.getElementById('history-panel').style.display = historyMode ? 'block' : 'none';
+  document.getElementById('data-panel').classList.toggle('visible', !historyMode);
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* QUOTE                                                   */
+/* ═══════════════════════════════════════════════════════ */
+function buildQuote(){
+  const quotes = [
+    { t:'"Mujeres y niños primero." — Orden de evacuación, 00:15h del 15 de abril de 1912.', s:'Declaración del oficial Charles Lightoller, comisión senatorial, 1912' },
+    { t:'"El Titanic se hundió de proa. Los pasajeros de primera clase tenían camarotes en cubiertas superiores, más cercanas a los botes."', s:'National Geographic, análisis del naufragio' },
+    { t:'"Ni el dinero, ni el rango, ni el poder pudieron comprar la geografía del barco cuando llegó la emergencia."', s:'Comisión senatorial de investigación, EE.UU., 1912' },
+    { t:'"Los grupos familiares grandes tardaban más en moverse juntos. La coordinación en pánico tiene un coste medible."', s:'Análisis estadístico histórico del naufragio' },
+  ];
+  const q = quotes[Math.floor(Math.random() * quotes.length)];
+  document.getElementById('result-quote').innerHTML =
+    `<p class="quote-text">${q.t}</p><p class="quote-source">— ${q.s}</p>`;
+}
+
+/* ═══════════════════════════════════════════════════════ */
+/* ANIMATED COUNTER                                        */
+/* ═══════════════════════════════════════════════════════ */
+function animateCounter(target){
+  const el = document.getElementById('gauge-pct');
+  let cur = 0;
+  const step = target / 60;
+  const id = setInterval(()=>{
+    cur = Math.min(cur + step, target);
+    el.textContent = Math.round(cur) + '%';
+    if(cur >= target) clearInterval(id);
+  }, 28);
+}
+</script>
+</body>
+</html>

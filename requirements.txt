@@ -1,0 +1,29 @@
+# TFE - Análisis de Supervivencia en Desastres Marítimos
+# Instalar con: pip install -r requirements.txt
+
+# Manipulación de datos
+pandas>=2.0.0
+numpy>=1.24.0
+
+# Visualización
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Machine Learning
+scikit-learn>=1.3.0
+
+# Interpretabilidad del modelo
+shap>=0.44.0
+
+# Modelos avanzados (opcional pero recomendado)
+xgboost>=2.0.0
+
+# Simulador interactivo
+streamlit>=1.30.0
+
+# Descarga de datos
+kaggle>=1.6.0
+
+# Jupyter
+jupyter>=1.0.0
+ipykernel>=6.0.0

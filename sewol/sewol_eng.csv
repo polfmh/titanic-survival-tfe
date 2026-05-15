@@ -1,0 +1,477 @@
+,Category-1,Category-2,Category-3,floor,location,Raw,gender,age
+0,sailor,Deck,Captain,5,front,survival,male,69.0
+1,sailor,Deck,1st voyage,5,front,survival,male,42.0
+2,sailor,Deck,"1, etc.",5,front,survival,male,34.0
+3,sailor,Deck,2nd saver,5,front,survival,male,47.0
+4,sailor,Deck,"3,",5,front,survival,female,26.0
+5,sailor,Deck,Streets,5,front,survival,male,56.0
+6,sailor,Deck,Streets,5,front,survival,male,60.0
+7,sailor,Deck,Streets,5,front,survival,male,58.0
+8,sailor,Agency,warden,5,front,survival,male,54.0
+9,sailor,Agency,First institution,3,back,survival,male,58.0
+10,sailor,Agency,3rd institutions,5,front,survival,female,26.0
+11,sailor,Agency,Premature,3,back,survival,male,61.0
+12,sailor,Agency,Early,stokehold,back,survival,male,56.0
+13,sailor,Agency,Early,stokehold,back,survival,male,59.0
+14,sailor,Agency,Early,3,back,survival,male,62.0
+15,sailor,Passenger,Office,3,middle,Dead,male,45.0
+16,sailor,Passenger,Manager,3,middle,survival,male,33.0
+17,sailor,Passenger,Passenger,3,middle,Dead,female,22.0
+18,sailor,Passenger,Passenger,5,front,Dead,female,28.0
+19,sailor,Passenger,Event staff,3,middle,Dead,male,28.0
+20,sailor,Passenger,Part-time,3,middle,survival,male,20.0
+21,sailor,Passenger,Part-time,3,In,survival,male,
+22,sailor,Passenger,Part-time,4,middle,survival,male,21.0
+23,sailor,Passenger,Part-time,3,middle,Dead,male,28.0
+24,sailor,Passenger,Part-time,3,middle,Dead,male,19.0
+25,sailor,Passenger,Part-time,3,middle,Dead,male,20.0
+26,sailor,Cooking part,Coke,3,middle,survival,male,58.0
+27,sailor,Cooking part,Rice water,3,back,Dead,male,61.0
+28,sailor,Cooking part,Cooker,3,middle,survival,female,51.0
+29,sailor,Cooking part,Part-time,3,middle,Dead,female,43.0
+30,sailor,Cooking part,Cooker,3,middle,Dead,female,56.0
+31,sailor,Passenger,singer,5,front,survival,male,45.0
+32,sailor,Passenger,singer,5,front,survival,female,40.0
+33,student,student,2-1 half,4,back,survival,female,17.0
+34,student,student,2-1 half,4,back,survival,female,17.0
+35,student,student,2-1 half,4,back,survival,female,17.0
+36,student,student,2-1 half,4,back,survival,female,17.0
+37,student,student,2-1 half,4,back,survival,female,17.0
+38,student,student,2-1 half,4,back,survival,female,17.0
+39,student,student,2-1 half,4,back,survival,female,17.0
+40,student,student,2-1 half,4,back,survival,female,17.0
+41,student,student,2-1 half,4,back,survival,female,17.0
+42,student,student,2-1 half,4,back,survival,female,17.0
+43,student,student,2-1 half,4,back,survival,female,17.0
+44,student,student,2-1 half,4,back,survival,female,17.0
+45,student,student,2-1 half,4,back,survival,female,17.0
+46,student,student,2-1 half,4,back,survival,female,17.0
+47,student,student,2-1 half,4,back,survival,female,17.0
+48,student,student,2-1 half,4,back,survival,female,17.0
+49,student,student,2-1 half,4,back,survival,female,17.0
+50,student,student,2-1 half,4,back,survival,female,17.0
+51,student,student,2-1 half,4,back,survival,female,17.0
+52,student,student,2-2 half,4,back,survival,female,17.0
+53,student,student,2-2 half,4,back,survival,female,17.0
+54,student,student,2-2 half,4,back,survival,female,17.0
+55,student,student,2-2 half,4,back,survival,female,17.0
+56,student,student,2-2 half,4,back,survival,female,17.0
+57,student,student,2-2 half,4,back,survival,female,17.0
+58,student,student,2-2 half,4,back,survival,female,17.0
+59,student,student,2-2 half,4,back,survival,female,17.0
+60,student,student,2-2 half,4,back,survival,female,17.0
+61,student,student,2-2 half,4,back,survival,female,17.0
+62,student,student,2-2 half,4,back,survival,female,17.0
+63,student,student,2-3 half,4,back,survival,female,17.0
+64,student,student,2-3 half,4,back,survival,female,17.0
+65,student,student,2-3 half,4,back,survival,female,17.0
+66,student,student,2-3 half,4,back,survival,female,17.0
+67,student,student,2-3 half,4,back,survival,female,17.0
+68,student,student,2-3 half,4,back,survival,female,17.0
+69,student,student,2-3 half,4,back,survival,female,17.0
+70,student,student,2-3 half,4,back,survival,female,17.0
+71,student,student,2-4 half,4,front,survival,male,17.0
+72,student,student,2-4 half,4,front,survival,male,17.0
+73,student,student,2-4 half,4,front,survival,male,17.0
+74,student,student,2-4 half,4,front,survival,male,17.0
+75,student,student,2-4 half,4,front,survival,male,17.0
+76,student,student,2-4 half,4,front,survival,male,17.0
+77,student,student,2-4 half,4,front,survival,male,17.0
+78,student,student,2-4 half,4,front,survival,male,17.0
+79,student,student,2-4 half,4,front,survival,male,17.0
+80,student,student,2-5 half,4,front,survival,male,17.0
+81,student,student,2-5 half,4,front,survival,male,17.0
+82,student,student,2-5 half,4,front,survival,male,17.0
+83,student,student,2-5 half,4,front,survival,male,17.0
+84,student,student,2-5 half,4,front,survival,male,17.0
+85,student,student,2-5 half,4,front,survival,male,17.0
+86,student,student,2-5 half,4,front,survival,male,17.0
+87,student,student,2-5 half,4,front,survival,male,17.0
+88,student,student,2-5 half,4,front,survival,male,17.0
+89,student,student,2-6 half,4,front,survival,male,17.0
+90,student,student,2-6 half,4,front,survival,male,17.0
+91,student,student,2-6 half,4,front,survival,male,17.0
+92,student,student,2-6 half,4,front,survival,male,17.0
+93,student,student,2-6 half,4,front,survival,male,17.0
+94,student,student,2-6 half,4,front,survival,male,17.0
+95,student,student,2-6 half,4,front,survival,male,17.0
+96,student,student,2-6 half,4,front,survival,male,17.0
+97,student,student,2-6 half,4,front,survival,male,17.0
+98,student,student,2-6 half,4,front,survival,male,17.0
+99,student,student,2-6 half,4,front,survival,male,17.0
+100,student,student,2-6 half,4,front,survival,male,17.0
+101,student,student,2-6 half,4,front,survival,male,17.0
+102,student,student,2-7 half,4,front,survival,male,17.0
+103,student,student,2-8 half,4,front,survival,male,17.0
+104,student,student,2-8 half,4,front,survival,male,17.0
+105,student,student,2-9 half,4,back,survival,female,17.0
+106,student,student,2-9 half,4,back,survival,female,17.0
+107,student,student,2-10 half,4,back,survival,female,17.0
+108,student,teacher,consensus,5,middle,survival,male,52.0
+109,student,teacher,2-10 half,5,middle,survival,female,52.0
+110,student,teacher,2-4 half,5,middle,survival,female,28.0
+111,student,teacher,Sol,4,front,Dead,male,40.0
+112,student,student,2-6 half,4,front,Dead,male,17.0
+113,student,student,2-6 half,4,front,Dead,male,17.0
+114,student,teacher,Sol,4,front,Dead,male,57.0
+115,student,student,2-1 half,4,back,Dead,female,17.0
+116,student,student,2-2 half,4,back,Dead,female,17.0
+117,student,student,2-1 half,4,back,Dead,female,17.0
+118,student,student,2-1 half,4,back,Dead,female,17.0
+119,student,student,2-1 half,4,back,Dead,female,17.0
+120,student,student,2-1 half,4,back,Dead,female,17.0
+121,student,student,2-1 half,4,back,Dead,female,17.0
+122,student,student,2-1 half,4,back,Dead,female,17.0
+123,student,student,2-1 half,4,back,Dead,female,17.0
+124,student,student,2-1 half,4,back,Dead,female,17.0
+125,student,student,2-1 half,4,back,Dead,female,17.0
+126,student,student,2-1 half,4,back,Dead,female,17.0
+127,student,student,2-1 half,4,back,Dead,female,17.0
+128,student,student,2-1 half,4,back,Dead,female,17.0
+129,student,student,2-1 half,4,back,Dead,female,17.0
+130,student,student,2-1 half,4,back,Dead,female,17.0
+131,student,student,2-1 half,4,back,Dead,female,17.0
+132,student,student,2-1 half,4,back,Dead,female,17.0
+133,student,student,2-1 half,4,back,Dead,female,17.0
+134,student,student,2-2 half,4,back,Dead,female,17.0
+135,student,student,2-2 half,4,back,Dead,female,17.0
+136,student,student,2-2 half,4,back,Dead,female,17.0
+137,student,student,2-2 half,4,back,Dead,female,17.0
+138,student,student,2-2 half,4,back,Dead,female,17.0
+139,student,student,2-2 half,4,back,Dead,female,17.0
+140,student,student,2-2 half,4,back,Dead,female,17.0
+141,student,student,2-2 half,4,back,Dead,female,17.0
+142,student,student,2-2 half,4,back,Dead,female,17.0
+143,student,student,2-2 half,4,back,Dead,female,17.0
+144,student,student,2-2 half,4,back,Dead,female,17.0
+145,student,student,2-2 half,4,back,Dead,female,17.0
+146,student,student,2-2 half,4,back,Dead,female,17.0
+147,student,student,2-2 half,4,back,Dead,female,17.0
+148,student,student,2-2 half,4,back,Dead,female,17.0
+149,student,student,2-2 half,4,back,Dead,female,17.0
+150,student,student,2-2 half,4,back,Dead,female,17.0
+151,student,student,2-2 half,4,back,Dead,female,17.0
+152,student,student,2-2 half,4,back,Dead,female,17.0
+153,student,student,2-2 half,4,back,Dead,female,17.0
+154,student,student,2-2 half,4,back,Dead,female,17.0
+155,student,student,2-2 half,4,back,Dead,female,17.0
+156,student,student,2-2 half,4,back,Dead,female,17.0
+157,student,student,2-2 half,4,back,Dead,female,17.0
+158,student,student,2-3 half,4,back,Dead,female,17.0
+159,student,student,2-3 half,4,back,Dead,female,17.0
+160,student,student,2-3 half,4,back,Dead,female,17.0
+161,student,student,2-3 half,4,back,Dead,female,17.0
+162,student,student,2-3 half,4,back,Dead,female,17.0
+163,student,student,2-3 half,4,back,Dead,female,17.0
+164,student,student,2-3 half,4,back,Dead,female,17.0
+165,student,student,2-3 half,4,back,Dead,female,17.0
+166,student,student,2-3 half,4,back,Dead,female,17.0
+167,student,student,2-3 half,4,back,Dead,female,17.0
+168,student,student,2-3 half,4,back,Dead,female,17.0
+169,student,student,2-3 half,4,back,Dead,female,17.0
+170,student,student,2-3 half,4,back,Dead,female,17.0
+171,student,student,2-3 half,4,back,Dead,female,17.0
+172,student,student,2-3 half,4,back,Dead,female,17.0
+173,student,student,2-3 half,4,back,Dead,female,17.0
+174,student,student,2-3 half,4,back,Dead,female,17.0
+175,student,student,2-3 half,4,back,Dead,female,17.0
+176,student,student,2-3 half,4,back,Dead,female,17.0
+177,student,student,2-3 half,4,back,Dead,female,17.0
+178,student,student,2-3 half,4,back,Dead,female,17.0
+179,student,student,2-3 half,4,back,Dead,female,17.0
+180,student,student,2-3 half,4,back,Dead,female,17.0
+181,student,student,2-3 half,4,back,Dead,female,17.0
+182,student,student,2-3 half,4,back,Dead,female,17.0
+183,student,student,2-3 half,4,back,Dead,female,17.0
+184,student,student,2-4 half,4,front,Dead,male,17.0
+185,student,student,2-4 half,4,front,Dead,male,17.0
+186,student,student,2-4 half,4,front,Dead,male,17.0
+187,student,student,2-4 half,4,front,Dead,male,17.0
+188,student,student,2-4 half,4,front,Dead,male,17.0
+189,student,student,2-4 half,4,front,Dead,male,17.0
+190,student,student,2-4 half,4,front,Dead,male,17.0
+191,student,student,2-4 half,4,front,Dead,male,17.0
+192,student,student,2-4 half,4,front,Dead,male,17.0
+193,student,student,2-4 half,4,front,Dead,male,17.0
+194,student,student,2-4 half,4,front,Dead,male,17.0
+195,student,student,2-4 half,4,front,Dead,male,17.0
+196,student,student,2-4 half,4,front,Dead,male,17.0
+197,student,student,2-4 half,4,front,Dead,male,17.0
+198,student,student,2-4 half,4,front,Dead,male,17.0
+199,student,student,2-4 half,4,front,Dead,male,17.0
+200,student,student,2-4 half,4,front,Dead,male,17.0
+201,student,student,2-4 half,4,front,Dead,male,17.0
+202,student,student,2-4 half,4,front,Dead,male,17.0
+203,student,student,2-4 half,4,front,Dead,male,17.0
+204,student,student,2-4 half,4,front,Dead,male,17.0
+205,student,student,2-4 half,4,front,Dead,male,17.0
+206,student,student,2-4 half,4,front,Dead,male,17.0
+207,student,student,2-4 half,4,front,Dead,male,17.0
+208,student,student,2-4 half,4,front,Dead,male,17.0
+209,student,student,2-4 half,4,front,Dead,male,17.0
+210,student,student,2-4 half,4,front,Dead,male,17.0
+211,student,student,2-4 half,4,front,Dead,male,17.0
+212,student,student,2-5 half,4,front,Dead,male,17.0
+213,student,student,2-5 half,4,front,Dead,male,17.0
+214,student,student,2-5 half,4,front,Dead,male,17.0
+215,student,student,2-5 half,4,front,Dead,male,17.0
+216,student,student,2-5 half,4,front,Dead,male,17.0
+217,student,student,2-5 half,4,front,Dead,male,17.0
+218,student,student,2-5 half,4,front,Dead,male,17.0
+219,student,student,2-5 half,4,front,Dead,male,17.0
+220,student,student,2-5 half,4,front,Dead,male,17.0
+221,student,student,2-5 half,4,front,Dead,male,17.0
+222,student,student,2-5 half,4,front,Dead,male,17.0
+223,student,student,2-5 half,4,front,Dead,male,17.0
+224,student,student,2-5 half,4,front,Dead,male,17.0
+225,student,student,2-5 half,4,front,Dead,male,17.0
+226,student,student,2-5 half,4,front,Dead,male,17.0
+227,student,student,2-5 half,4,front,Dead,male,17.0
+228,student,student,2-5 half,4,front,Dead,male,17.0
+229,student,student,2-5 half,4,front,Dead,male,17.0
+230,student,student,2-5 half,4,front,Dead,male,17.0
+231,student,student,2-5 half,4,front,Dead,male,17.0
+232,student,student,2-5 half,4,front,Dead,male,17.0
+233,student,student,2-5 half,4,front,Dead,male,17.0
+234,student,student,2-5 half,4,front,Dead,male,17.0
+235,student,student,2-5 half,4,front,Dead,male,17.0
+236,student,student,2-5 half,4,front,Dead,male,17.0
+237,student,student,2-5 half,4,front,Dead,male,17.0
+238,student,student,2-5 half,4,front,Dead,male,17.0
+239,student,student,2-6 half,4,front,Dead,male,17.0
+240,student,student,2-6 half,4,front,Dead,male,17.0
+241,student,student,2-6 half,4,front,Dead,male,17.0
+242,student,student,2-6 half,4,front,Dead,male,17.0
+243,student,student,2-6 half,4,front,Dead,male,17.0
+244,student,student,2-6 half,4,front,Dead,male,17.0
+245,student,student,2-6 half,4,front,Dead,male,17.0
+246,student,student,2-6 half,4,front,Dead,male,17.0
+247,student,student,2-6 half,4,front,Dead,male,17.0
+248,student,student,2-6 half,4,front,Dead,male,17.0
+249,student,student,2-6 half,4,front,Dead,male,17.0
+250,student,student,2-6 half,4,front,Dead,male,17.0
+251,student,student,2-6 half,4,front,Dead,male,17.0
+252,student,student,2-6 half,4,front,Dead,male,17.0
+253,student,student,2-6 half,4,front,Dead,male,17.0
+254,student,student,2-6 half,4,front,Dead,male,17.0
+255,student,student,2-6 half,4,front,Dead,male,17.0
+256,student,student,2-6 half,4,front,Dead,male,17.0
+257,student,student,2-6 half,4,front,Dead,male,17.0
+258,student,student,2-6 half,4,front,Dead,male,17.0
+259,student,student,2-6 half,4,front,Dead,male,17.0
+260,student,student,2-6 half,4,front,Dead,male,17.0
+261,student,student,2-6 half,4,front,Dead,male,17.0
+262,student,student,2-7 half,4,front,Dead,male,17.0
+263,student,student,2-7 half,4,front,Dead,male,17.0
+264,student,student,2-7 half,4,front,Dead,male,17.0
+265,student,student,2-7 half,4,front,Dead,male,17.0
+266,student,student,2-7 half,4,front,Dead,male,17.0
+267,student,student,2-7 half,4,front,Dead,male,17.0
+268,student,student,2-7 half,4,front,Dead,male,17.0
+269,student,student,2-7 half,4,front,Dead,male,17.0
+270,student,student,2-7 half,4,front,Dead,male,17.0
+271,student,student,2-7 half,4,front,Dead,male,17.0
+272,student,student,2-7 half,4,front,Dead,male,17.0
+273,student,student,2-7 half,4,front,Dead,male,17.0
+274,student,student,2-7 half,4,front,Dead,male,17.0
+275,student,student,2-7 half,4,front,Dead,male,17.0
+276,student,student,2-7 half,4,front,Dead,male,17.0
+277,student,student,2-7 half,4,front,Dead,male,17.0
+278,student,student,2-7 half,4,front,Dead,male,17.0
+279,student,student,2-7 half,4,front,Dead,male,17.0
+280,student,student,2-7 half,4,front,Dead,male,17.0
+281,student,student,2-7 half,4,front,Dead,male,17.0
+282,student,student,2-7 half,4,front,Dead,male,17.0
+283,student,student,2-7 half,4,front,Dead,male,17.0
+284,student,student,2-7 half,4,front,Dead,male,17.0
+285,student,student,2-7 half,4,front,Dead,male,17.0
+286,student,student,2-7 half,4,front,Dead,male,17.0
+287,student,student,2-7 half,4,front,Dead,male,17.0
+288,student,student,2-7 half,4,front,Dead,male,17.0
+289,student,student,2-7 half,4,front,Dead,male,17.0
+290,student,student,2-7 half,4,front,Dead,male,17.0
+291,student,student,2-7 half,4,front,Dead,male,17.0
+292,student,student,2-7 half,4,front,Dead,male,17.0
+293,student,student,2-7 half,4,front,Dead,male,17.0
+294,student,student,2-8 half,4,front,Dead,male,17.0
+295,student,student,2-8 half,4,front,Dead,male,17.0
+296,student,student,2-8 half,4,front,Dead,male,17.0
+297,student,student,2-8 half,4,front,Dead,male,17.0
+298,student,student,2-8 half,4,front,Dead,male,17.0
+299,student,student,2-8 half,4,front,Dead,male,17.0
+300,student,student,2-8 half,4,front,Dead,male,17.0
+301,student,student,2-8 half,4,front,Dead,male,17.0
+302,student,student,2-8 half,4,front,Dead,male,17.0
+303,student,student,2-8 half,4,front,Dead,male,17.0
+304,student,student,2-8 half,4,front,Dead,male,17.0
+305,student,student,2-8 half,4,front,Dead,male,17.0
+306,student,student,2-8 half,4,front,Dead,male,17.0
+307,student,student,2-8 half,4,front,Dead,male,17.0
+308,student,student,2-8 half,4,front,Dead,male,17.0
+309,student,student,2-8 half,4,front,Dead,male,17.0
+310,student,student,2-8 half,4,front,Dead,male,17.0
+311,student,student,2-8 half,4,front,Dead,male,17.0
+312,student,student,2-8 half,4,front,Dead,male,17.0
+313,student,student,2-8 half,4,front,Dead,male,17.0
+314,student,student,2-8 half,4,front,Dead,male,17.0
+315,student,student,2-8 half,4,front,Dead,male,17.0
+316,student,student,2-8 half,4,front,Dead,male,17.0
+317,student,student,2-8 half,4,front,Dead,male,17.0
+318,student,student,2-8 half,4,front,Dead,male,17.0
+319,student,student,2-8 half,4,front,Dead,male,17.0
+320,student,student,2-8 half,4,front,Dead,male,17.0
+321,student,student,2-8 half,4,front,Dead,male,17.0
+322,student,student,2-8 half,4,front,Dead,male,17.0
+323,student,student,2-9 half,4,back,Dead,female,17.0
+324,student,student,2-9 half,4,back,Dead,female,17.0
+325,student,student,2-9 half,4,back,Dead,female,17.0
+326,student,student,2-9 half,4,back,Dead,female,17.0
+327,student,student,2-9 half,4,back,Dead,female,17.0
+328,student,student,2-9 half,4,back,Dead,female,17.0
+329,student,student,2-9 half,4,back,Dead,female,17.0
+330,student,student,2-9 half,4,back,Dead,female,17.0
+331,student,student,2-9 half,4,back,Dead,female,17.0
+332,student,student,2-9 half,4,back,Dead,female,17.0
+333,student,student,2-9 half,4,back,Dead,female,17.0
+334,student,student,2-9 half,4,back,Dead,female,17.0
+335,student,student,2-9 half,4,back,Dead,female,17.0
+336,student,student,2-9 half,4,back,Dead,female,17.0
+337,student,student,2-9 half,4,back,Dead,female,17.0
+338,student,student,2-9 half,4,back,Dead,female,17.0
+339,student,student,2-9 half,4,back,Dead,female,17.0
+340,student,student,2-9 half,4,back,Dead,female,17.0
+341,student,student,2-9 half,4,back,Dead,female,17.0
+342,student,student,2-9 half,4,back,Dead,female,17.0
+343,student,student,2-10 half,4,back,Dead,female,17.0
+344,student,student,2-10 half,4,back,Dead,female,17.0
+345,student,student,2-10 half,4,back,Dead,female,17.0
+346,student,student,2-10 half,4,back,Dead,female,17.0
+347,student,student,2-10 half,4,back,Dead,female,17.0
+348,student,student,2-10 half,4,back,Dead,female,17.0
+349,student,student,2-10 half,4,back,Dead,female,17.0
+350,student,student,2-10 half,4,back,Dead,female,17.0
+351,student,student,2-10 half,4,back,Dead,female,17.0
+352,student,student,2-10 half,4,back,Dead,female,17.0
+353,student,student,2-10 half,4,back,Dead,female,17.0
+354,student,student,2-10 half,4,back,Dead,female,17.0
+355,student,student,2-10 half,4,back,Dead,female,17.0
+356,student,student,2-10 half,4,back,Dead,female,17.0
+357,student,student,2-10 half,4,back,Dead,female,17.0
+358,student,student,2-10 half,4,back,Dead,female,17.0
+359,student,student,2-10 half,4,back,Dead,female,17.0
+360,student,student,2-10 half,4,back,Dead,female,17.0
+361,student,student,2-10 half,4,back,Dead,female,17.0
+362,student,student,2-10 half,4,back,Dead,female,17.0
+363,student,teacher,2-1 half,5,middle,Dead,female,28.0
+364,student,teacher,2-2 half,5,middle,Dead,female,25.0
+365,student,teacher,2-3 half,5,middle,Dead,female,26.0
+366,student,teacher,2-5 half,4,front,Dead,male,33.0
+367,student,teacher,2-6 half,4,front,Dead,male,35.0
+368,student,teacher,2-7 half,5,middle,Dead,female,31.0
+369,student,teacher,2-8 half,4,front,Dead,male,44.0
+370,student,teacher,2-9 half,5,middle,Dead,female,24.0
+371,student,teacher,Sol,4,front,Dead,male,52.0
+372,Normal,move,Family 1,3,front,Dead,male,51.0
+373,Normal,move,Family 1,3,front,Dead,male,7.0
+374,Normal,move,personal,3,back,Dead,female,54.0
+375,Normal,Travel,Group 1,3,front,Dead,female,60.0
+376,Normal,Travel,Group 1,3,front,Dead,male,60.0
+377,Normal,Travel,Group 1,3,front,Dead,female,60.0
+378,Normal,Travel,Group 1,3,front,Dead,male,60.0
+379,Normal,Travel,Group 1,3,front,Dead,female,60.0
+380,Normal,Travel,Group 1,3,front,Dead,female,60.0
+381,Normal,Travel,Group 1,3,front,Dead,male,60.0
+382,Normal,Travel,Group 1,3,front,Dead,female,60.0
+383,Normal,Travel,Group 1,3,front,Dead,male,60.0
+384,Normal,Travel,Group 1,3,front,Dead,male,60.0
+385,Normal,Travel,Group 1,3,front,Dead,female,60.0
+386,Normal,Travel,Group 1,3,front,Dead,female,60.0
+387,Normal,In,In,3,In,Dead,male,
+388,Normal,move,Family 1,3,front,Dead,female,29.0
+389,Normal,task,Family 2,3,front,Dead,male,44.0
+390,Normal,Travel,Family 2,3,front,Dead,female,44.0
+391,Normal,Travel,Family 2,3,front,Dead,male,11.0
+392,Normal,task,Colleagues 3,3,In,Dead,male,44.0
+393,Normal,task,Colleagues 1,3,In,Dead,male,42.0
+394,Normal,task,personal,3,In,Dead,male,37.0
+395,Normal,In,In,3,In,Dead,female,
+396,Normal,In,In,3,In,Dead,female,69.0
+397,Normal,task,Colleagues 1,3,In,Dead,male,47.0
+398,Normal,In,In,3,In,Dead,female,
+399,Normal,In,In,3,In,Dead,female,
+400,Normal,In,In,3,In,Dead,male,
+401,Normal,Travel,Group 2,3,front,Dead,male,69.0
+402,Normal,Travel,Family 3,3,front,Dead,female,37.0
+403,Normal,Travel,Family 3,3,front,Dead,male,38.0
+404,Normal,task,Colleagues 2,3,front,Dead,male,46.0
+405,Normal,task,Colleagues 2,3,front,survival,male,41.0
+406,Normal,task,personal,3,back,survival,male,29.0
+407,Normal,Travel,Group 1,3,front,survival,male,58.0
+408,Normal,task,personal,3,In,survival,male,39.0
+409,Normal,task,personal,3,back,survival,male,35.0
+410,Normal,task,Colleagues 3,3,In,survival,male,37.0
+411,Normal,task,personal,3,back,survival,male,38.0
+412,Normal,move,Family 1,3,front,survival,female,5.0
+413,Normal,In,In,3,In,survival,female,62.0
+414,Normal,In,In,3,In,survival,male,47.0
+415,Normal,In,In,3,In,survival,male,58.0
+416,Normal,In,In,3,In,survival,male,32.0
+417,Normal,In,In,3,front,survival,male,50.0
+418,Normal,task,personal,3,back,survival,male,49.0
+419,Normal,move,Family 4,3,In,survival,male,54.0
+420,Normal,task,personal,4,back,survival,male,38.0
+421,Normal,In,In,3,In,survival,male,37.0
+422,Normal,In,In,3,front,survival,male,49.0
+423,Normal,task,personal,3,back,survival,male,58.0
+424,Normal,Travel,Group 1,3,front,survival,male,60.0
+425,Normal,In,In,3,In,survival,male,23.0
+426,Normal,In,In,3,front,survival,male,60.0
+427,Normal,task,Colleagues 4,3,In,survival,male,59.0
+428,Normal,task,personal,5,back,survival,male,58.0
+429,Normal,task,personal,3,back,survival,male,
+430,Normal,In,In,3,In,survival,male,61.0
+431,Normal,task,personal,3,back,survival,male,61.0
+432,Normal,In,In,3,In,survival,female,44.0
+433,Normal,Travel,personal,3,In,survival,male,21.0
+434,Normal,task,personal,3,In,survival,male,45.0
+435,Normal,task,personal,3,back,survival,male,54.0
+436,Normal,task,personal,3,In,survival,male,
+437,Normal,Travel,Group 2,3,In,survival,female,71.0
+438,Normal,task,personal,3,In,survival,male,55.0
+439,Normal,Travel,Travel 1,3,front,survival,female,54.0
+440,Normal,task,personal,3,In,survival,male,
+441,Normal,task,personal,3,In,survival,male,45.0
+442,Normal,task,personal,3,back,survival,male,49.0
+443,Normal,In,In,3,In,survival,female,
+444,Normal,In,In,3,In,survival,male,57.0
+445,Normal,task,personal,3,back,survival,male,53.0
+446,Normal,task,personal,3,back,survival,male,44.0
+447,Normal,In,In,3,In,survival,male,52.0
+448,Normal,task,personal,3,back,survival,male,50.0
+449,Normal,In,In,4,middle,survival,male,56.0
+450,Normal,task,Colleagues 4,3,In,survival,male,59.0
+451,Normal,task,personal,3,middle,survival,male,41.0
+452,Normal,Travel,Family 5,3,front,survival,female,46.0
+453,Normal,task,personal,3,back,survival,male,60.0
+454,Normal,In,In,3,In,survival,male,55.0
+455,Normal,task,personal,3,back,survival,male,50.0
+456,Normal,Travel,Group 1,3,front,survival,male,60.0
+457,Normal,task,Colleagues 2,3,front,survival,male,70.0
+458,Normal,In,In,3,In,survival,female,69.0
+459,Normal,move,Family 4,3,In,survival,female,44.0
+460,Normal,task,personal,3,In,survival,male,50.0
+461,Normal,task,personal,3,In,survival,male,48.0
+462,Normal,Travel,personal,3,In,survival,male,56.0
+463,Normal,In,In,3,In,survival,male,61.0
+464,Normal,In,In,3,In,survival,male,
+465,Normal,task,personal,3,In,survival,male,44.0
+466,Normal,Travel,Family 2,3,front,survival,male,7.0
+467,Normal,Travel,Group 1,3,front,survival,female,60.0
+468,Normal,In,In,3,middle,survival,male,48.0
+469,Normal,task,personal,3,back,survival,male,41.0
+470,Normal,task,personal,3,back,survival,male,48.0
+471,Normal,task,personal,3,middle,survival,male,38.0
+472,Normal,In,In,3,In,survival,male,46.0
+473,Normal,task,personal,3,back,survival,male,52.0
+474,Normal,task,personal,3,In,survival,male,42.0
+475,Normal,task,Family 5,3,front,survival,male,50.0

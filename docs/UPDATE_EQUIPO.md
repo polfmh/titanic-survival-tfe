@@ -1,9 +1,9 @@
 # Update del bloc de ML — Maig 2026
-**De: Albert · Per a: Pablo i Roger**
+**Albert**
 
 ---
 
-Hola, us deixo aquí tot el que he fet perquè ho pugueu agafar sense haver de preguntar-me res bàsic. He intentat documentar-ho bé, però si teniu dubtes ja m'escriviu.
+Hola, us deixo aquí tot el que he fet perquè ho pugueu pillar rapid. He intentat documentar-ho bé si teniu dubtes ja m'escriviu.
 
 ---
 
@@ -15,9 +15,9 @@ He descarregat el dataset del Titanic directament de Kaggle. El teniu a `titanic
 
 - `train.csv` — 891 passatgers **amb** l'etiqueta de si van sobreviure o no. És el que s'ha usat per entrenar i avaluar el model.
 - `test.csv` — 418 passatgers **sense** etiqueta. El model els ha de predir.
-- `gender_submission.csv` — exemple del format que demana Kaggle per al lliurament.
+- `gender_submission.csv` — exemple del format que demana Kaggle per al lliurament. Tambe ens he presentat al concurs de kaggle aviam que diuen ells 
 
-El dataset del Sewol ja estava a `sewol/sewol_eng.csv`. Té les columnes `gender`, `age`, `Raw` (que és "survival" o "Dead"), `floor` i `location`. Serveix bé per a la comparativa.
+El dataset del Sewol ja estava a `sewol/sewol_eng.csv`. Té les columnes `gender`, `age`, `Raw` (que és "survival" o "Dead"), `floor` i `location`. S' haura d' adaptar i crear auxiliar en els dos datasets (titanic i Sewol) per poderho creuar guay i treure conclusions (evacuacio etc)
 
 ---
 
@@ -31,15 +31,15 @@ Aquí és on hi ha tota la feina tècnica. Està **executat**, o sigui que quan 
 
 **Secció 3 — Neteja i variables noves.** S'omplen els buits que manquen (l'edat, el port, la tarifa) i es creen 8 variables noves a partir de les originals. La més important és el títol social (Mr, Mrs, Miss, Master, Rare), que s'extreu del nom de cada passatger i combina en una sola variable el gènere, l'edat aproximada i la posició social.
 
-**Secció 4 — El model.** Es proven dos models: Regressió Logística com a referència, i Random Forest com a model principal. El Random Forest encerta el 82% dels casos. S'inclou també l'anàlisi SHAP, que explica quant contribueix cada variable a cada predicció individual.
+**Secció 4 — El model.** Es proven dos models: Regressió Logística com a referència, i Random Forest com a model principal. El Random Forest encerta el 82% dels casos. S'inclou també l'anàlisi SHAP, que explica quant contribueix cada variable a cada predicció individual. Diem que em fet els dos models i hem ist que el random es millor tal
 
-**Secció 5 — Outputs.** Es genera el fitxer per a Kaggle i el CSV enriquit per a l'equip.
+**Secció 5 — Outputs.** Es genera el fitxer per a Kaggle i el CSV enriquit per creuarho despres amb el Sewol.
 
 ---
 
 ### 3. Els resultats
 
-Aquests són els números que ha de conèixer tothom del grup:
+Aquests són els números del Titanic:
 
 | Dada | Valor |
 |------|-------|
@@ -62,9 +62,8 @@ El factor més determinant és el **gènere** (28,7% del pes total del model), s
 
 **`output/titanic_enriched.csv`** — Aquest és el fitxer clau per a vosaltres. Té els 1.309 passatgers (train + test) amb totes les variables originals, les 8 variables noves que he creat, i les **probabilitats de supervivència** que ha calculat el model per a cada passatger. Està llest per importar-lo a Power BI o creuar-lo amb el Sewol directament.
 
-**`output/*.png`** — Tots els gràfics de l'anàlisi ja generats. Els podeu posar al Word de la memòria sense fer res més.
+**`output/*.png`** — Tots els gràfics de l'anàlisi ja generats, ja els fotrem a la memoria 
 
-**`output/titanic_submission.csv`** — El fitxer per pujar a Kaggle. Té el format correcte, 418 files, i les prediccions del model. Només cal entrar a la competició i pujar-lo.
 
 ---
 
@@ -88,7 +87,6 @@ Les 5 preguntes estan directament lligades a les variables del model:
 4. **Amb qui viatges?** → `FamilySize`, `IsAlone`, `FamilyCat`
 5. **Des d'on embarcaries?** → `Embarked`
 
-Les preguntes estan escrites de forma divertida ("El mes té molts dies..." per a la tercera classe) i cada resposta mostra un missatge breu i irònic del model antes de passar a la pròxima pregunta.
 
 El resultat mostra:
 - Un **indicador circular animat** amb el percentatge
@@ -98,7 +96,7 @@ El resultat mostra:
 - Un **Mode dades** que ensenya les variables reals tal com les veuria el model: `Sex = female`, `Pclass = 1`, `Age = 27`, etc. Això és el que li va bé al tribunal per veure que el simulador no és màgia sinó el model real.
 - Una **cita històrica** del naufragi
 
-Visualment té el vaixell del Titanic animat, el cel estrellat i l'animació de l'onatge. Però el que m'importa destacar és que **tots els càlculs estan basats en les taxes historials reals** del dataset, no en números inventats.
+Important a destacar és que **tots els càlculs estan basats en les taxes historials reals** del dataset, no en números inventats.
 
 ---
 
@@ -138,17 +136,18 @@ A `docs/` hi ha quatre fitxers:
 
 ---
 
-## Per al Pablo — comparativa amb el Sewol
+## Proxims pasos persona 2 — comparativa amb el Sewol
 
 El CSV que et deixo (`titanic_enriched.csv`) té les columnes `Sex`, `Age`, `Survived`, `Pclass`, `SurvivalProb`, `AgeGroup` i `FamilyCat`, que pots creuar directament amb les del Sewol.
 
 El que crec que serà més interessant és comparar l'efecte del gènere entre els dos desastres. Al Titanic les dones van sobreviure al 74,2%; al Sewol, la majoria de víctimes eren estudiants d'institut i el protocol va ser molt diferent (els van dir que es quedessin quiets als seus camarots). Si el patró de gènere canvia o s'inverteix, ja tens la conclusió central del treball.
+S'hauran de crear columnes noves etc per creuarho millor.
 
 A `GUIA_COMPANEROS.md` tens codi Python directe per fer aquesta comparativa.
 
 ---
 
-## Per al Roger — el dashboard de Power BI
+## Proxims pasos persona 3 — el dashboard de Power BI o fer un historic de visuals o com vulgueu
 
 El fitxer `titanic_enriched.csv` s'importa directament a Power BI sense transformacions. Les columnes interessants per al dashboard:
 
@@ -163,15 +162,13 @@ Els gràfics de `output/` es poden enganxar directament al Word. El més potent 
 
 ## Idees per als pròxims passos
 
-Coses que crec que valdria la pena fer si teniu temps:
+Coses que crec que molarien:
 
 **La comparativa de protocols d'evacuació** és la conclusió més potent que pot tenir el treball. Si els dades del Sewol mostren que el gènere va tenir menys impacte que al Titanic, és perquè el context va ser totalment diferent. Això li dona molt de valor al treball respecte a un simple anàlisi del Titanic.
 
-**Un mapa de calor Gènere × Classe al Power BI**, interactiu, com el que tinc al model_explorer però on el tribunal pugui clicar i filtrar. Queda molt bé i explica visualment el punt principal.
+**Una taula comparativa final sencilla** a la memòria, tipus: "Al Titanic, ser dona multiplicava per 3,9 la probabilitat de sobreviure. Al Sewol, aquest factor va ser X." Una taula d'aquestes, ben posada a les conclusions, val més que tres pàgines d'anàlisi. Podriem entrar o estudiar els insights fins i tot filosoficament `"Ha canviat la generacio la "educacio" de mujeres primero?"`
 
-**Una taula comparativa final sencilla** a la memòria, tipus: "Al Titanic, ser dona multiplicava per 3,9 la probabilitat de sobreviure. Al Sewol, aquest factor va ser X." Una taula d'aquestes, ben posada a les conclusions, val més que tres pàgines d'anàlisi.
-
-**Citar un parell de papers del Titanic** a la memòria (Hall 1986, Frey et al. 2011) que estudien exactament aquestes variables. Si els vostres resultats coincideixen amb la literatura, el tribunal ho valora molt.
+**Citar un parell de papers del Titanic** a la memòria (Hall 1986, Frey et al. 2011) que estudien exactament aquestes variables. Si els vostres resultats coincideixen amb la literatura, ens va perfecte.
 
 ---
 
@@ -180,6 +177,5 @@ Coses que crec que valdria la pena fer si teniu temps:
 - **11 de juny** — Lliurament de la documentació
 - **16 i 18 de juny** — Presentacions
 
-Estic disponible si necessiteu que ajusti alguna cosa del CSV o que afegeixi alguna columna. Qualsevol dubte, ja sabeu.
 
 — Albert

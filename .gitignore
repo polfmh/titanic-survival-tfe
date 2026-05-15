@@ -20,6 +20,12 @@ kaggle.json
 ~$*.docx
 ~$*.xlsx
 
+# Videos (massa grans per a GitHub — pujar a Drive o WeTransfer)
+*.mp4
+*.mov
+*.avi
+*.mkv
+
 # IDEs
 .vscode/
 .idea/

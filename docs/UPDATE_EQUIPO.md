@@ -179,3 +179,76 @@ Coses que crec que molarien:
 
 
 — Albert
+
+---
+
+# Update del bloque de Comparativa — Mayo 2026
+**Pablo**
+
+---
+
+Hola, os dejo el resumen de lo que he hecho en el bloque de comparativa Titanic vs Sewol. Todo está ejecutado y listo.
+
+---
+
+## Qué he hecho
+
+### 1. La normalización de los datasets
+
+He creado un dataset unificado a partir del `titanic_enriched.csv` de Albert y del `sewol_eng.csv`. He normalizado las columnas equivalentes (género, edad, supervivencia) y he creado una columna `role` para separar tripulación y pasajeros. He utilizado solo los 891 pasajeros del train del Titanic (los que tienen supervivencia real) y los 443 pasajeros del Sewol (excluyendo los 33 tripulantes).
+
+El fichero combinado está en `output/comparativa_titanic_sewol.csv`.
+
+### 2. Los notebooks
+
+Todo el trabajo técnico está en dos notebooks:
+
+**`notebooks/TFE_Comparativa_Sewol.ipynb`** — El trabajo de análisis principal. Tiene cinco secciones:
+
+- **Paso 1** — Carga y descripción de los dos datasets con todas las columnas.
+- **Paso 2** — Normalización y unificación en un DataFrame combinado. Incluye la creación de la columna `role` y la imputación de nulos de edad del Sewol con la mediana.
+- **Paso 3** — Análisis de supervivencia por género. Tabla y gráfico comparativo. Resultado principal: ratio mujeres/hombres de 3,93x en el Titanic vs 0,79x en el Sewol (el patrón se invierte).
+- **Paso 4** — Análisis de supervivencia por franja de edad. Grupos adaptados a la distribución del Sewol (69% adolescentes). Los adolescentes del Sewol tuvieron la tasa más baja: 23,9%.
+- **Paso 5** — Exportación del dataset combinado.
+
+**`notebooks/TFE_Conclusions_Comparativa.ipynb`** — Las conclusiones visuales. Tiene tres secciones:
+
+- **Paso 1** — Carga del CSV combinado.
+- **Paso 2** — Tabla comparativa final con todos los indicadores clave, tabla con colores y gráfico de barras horizontales.
+- **Paso 3** — Análisis del protocolo de evacuación: ratio mujeres/hombres y niños/adultos para los dos desastres.
+
+### 3. Los resultados principales
+
+| Dato | Titanic | Sewol |
+|------|---------|-------|
+| Tasa global | **38,4%** | **33,6%** |
+| Mujeres | **74,2%** | **29,1%** |
+| Hombres | **18,9%** | **36,8%** |
+| Ratio mujeres/hombres | **3,93x** | **0,79x** ← el patrón se invierte |
+| Adolescentes (13-19) | **45,3%** | **23,9%** ← el grupo más perjudicado |
+| Adultos (40-59) | **40,4%** | **78,2%** |
+| Edad media no supervivientes | **29,8 años** | **20,8 años** |
+
+La conclusión central: las mismas variables —género y edad— operaron de manera completamente diferente en cada desastre. El contexto y el protocolo de evacuación importa más que las normas sociales.
+
+### 4. Los ficheros que os interesan
+
+**`output/comparativa_titanic_sewol.csv`** — El dataset combinado normalizado. 1.334 filas, columnas: `disaster`, `gender`, `age`, `survived`, `role`.
+
+**`output/*.png`** — Cinco gráficos comparativos listos para la memoria:
+- `comparativa_genere_titanic_sewol.png`
+- `comparativa_edat_titanic_sewol.png`
+- `ratio_genere_titanic_sewol.png`
+- `ratio_nens_adults_titanic_sewol.png`
+- `barres_comparativa_titanic_sewol.png`
+
+### 5. La documentación
+
+En `docs/` hay dos ficheros nuevos:
+
+- `informe_bloque_comparativa_Pablo.md` — Mi sección de la memoria del TFE. Cubre la metodología, los resultados y las conclusiones. Lista para integrar en el Word.
+- `CHEATSHEET_Pablo.md` — Mi guía para la presentación. Tiene los números clave, preguntas probables del tribunal con respuestas preparadas, y frases para la defensa.
+
+---
+
+— Pablo
